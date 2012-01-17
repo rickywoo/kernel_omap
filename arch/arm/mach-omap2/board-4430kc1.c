@@ -56,6 +56,7 @@
 #include <linux/wakelock.h>
 #include <plat/opp_twl_tps.h>
 #include <plat/mmc.h>
+#include <plat/remoteproc.h>
 
 #include <plat/hwspinlock.h>
 #include <plat/dmtimer.h>
@@ -63,6 +64,7 @@
 #include "hsmmc.h"
 #include "smartreflex-class3.h"
 #include "board-4430sdp-wifi.h"
+#include "omap4_ion.h"
 
 #include <linux/skbuff.h>
 #include <linux/ti_wilink_st.h>
@@ -430,8 +432,8 @@ static struct omap_dss_device sdp4430_otter1_device = {
 	//.platform_disable	= sdp4430_panel_disable_otter1,
 	.channel		= OMAP_DSS_CHANNEL_LCD2,
         .panel          = {
-        .width_in_mm = 158,
-        .height_in_mm = 92,
+        .width_in_um = 158000,
+        .height_in_um = 92000,
         },
 };
 
@@ -1957,24 +1959,28 @@ static void __init omap_4430sdp_init(void)
 	wake_lock_init(&uart_lock, WAKE_LOCK_SUSPEND, "uart_wake_lock");
 	omap_serial_init(omap_serial_platform_data);
 	omap4_twl6030_hsmmc_init(mmc);
-gpio_request(42,"OMAP_GPIO_ADC");
-gpio_direction_output(42,0);
-    /*For smb347*/
-    //Enable charger interrupt wakeup function.
-    omap_mux_init_signal("fref_clk4_req.gpio_wk7", \
-            OMAP_PIN_INPUT_PULLUP |OMAP_PIN_OFF_WAKEUPENABLE|OMAP_PIN_OFF_INPUT_PULLUP);
-    if(quanta_mbid>=4){
-        //EN pin
-        omap_mux_init_signal("c2c_data12.gpio_101", \
-                OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_LOW);
-        //SUSP
-        omap_mux_init_signal("uart4_rx.gpio_155", \
-                OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_HIGH);
-        gpio_request(101, "CHARGE-en");
-        gpio_direction_output(101, 0);
-        gpio_request(155, "CHARGE-SUSP");
-        gpio_direction_output(155, 1);
-    }
+	gpio_request(42,"OMAP_GPIO_ADC");
+	gpio_direction_output(42,0);
+
+	/*For smb347*/
+	//Enable charger interrupt wakeup function.
+	omap_mux_init_signal("fref_clk4_req.gpio_wk7", \
+		OMAP_PIN_INPUT_PULLUP |OMAP_PIN_OFF_WAKEUPENABLE|OMAP_PIN_OFF_INPUT_PULLUP);
+	if(quanta_mbid>=4) {
+		//EN pin
+		omap_mux_init_signal("c2c_data12.gpio_101", \
+		OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_LOW);
+		//SUSP
+		omap_mux_init_signal("uart4_rx.gpio_155", \
+		OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_HIGH);
+		gpio_request(101, "CHARGE-en");
+		gpio_direction_output(101, 0);
+		gpio_request(155, "CHARGE-SUSP");
+		gpio_direction_output(155, 1);
+	}
+
+	/* FIXME-HASH: ADDED FROM 4AI.4 */
+	omap4_register_ion();
 #ifdef CONFIG_TIWLAN_SDIO
 	config_wlan_mux();
 #else
@@ -2017,20 +2023,20 @@ gpio_direction_output(42,0);
 	omap_ilitek_init();	// chris 2011_0124
 #endif //CONFIG_TOUCHSCREEN_ILITEK
 
-    gpio_request(119, "ADO_SPK_ENABLE");
-    gpio_direction_output(119, 1);
-    gpio_set_value(119, 1);
-    gpio_request(120, "SKIPB_GPIO");
-    gpio_direction_output(120, 1);
-    gpio_set_value(120, 1);
- // Qunata_diagnostic 20110506 set GPIO 171 172 to be input
+	gpio_request(119, "ADO_SPK_ENABLE");
+	gpio_direction_output(119, 1);
+	gpio_set_value(119, 1);
+	gpio_request(120, "SKIPB_GPIO");
+	gpio_direction_output(120, 1);
+	gpio_set_value(120, 1);
+	// Qunata_diagnostic 20110506 set GPIO 171 172 to be input
 
 	omap_writew(omap_readw(0x4a10017C) | 0x011B, 0x4a10017C); 
 	omap_writew(omap_readw(0x4a10017C) & ~0x04, 0x4a10017C);
 	 
 	omap_writew(omap_readw(0x4a10017C) | 0x011B, 0x4a10017E); 
 	omap_writew(omap_readw(0x4a10017C) & ~0x04, 0x4a10017E);
-////////////////////////////////////////////
+	////////////////////////////////////////////
 }
 
 static void __init omap_4430sdp_map_io(void)

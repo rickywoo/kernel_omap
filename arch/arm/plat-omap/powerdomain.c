@@ -858,6 +858,42 @@ int pwrdm_set_lowpwrstchange(struct powerdomain *pwrdm)
 EXPORT_SYMBOL(pwrdm_set_lowpwrstchange);
 
 /**
+ * pwrdm_get_context_loss_count - get powerdomain's context loss count
+ * @pwrdm: struct powerdomain * to wait for
+ *
+ * Context loss count is the sum of powerdomain off-mode counter, the
+ * logic off counter and the per-bank memory off counter.  Returns negative
+ * (and WARNs) upon error, otherwise, returns the context loss count.
+ */
+int pwrdm_get_context_loss_count(struct powerdomain *pwrdm)
+{
+	int i, count;
+
+	if (!pwrdm) {
+		WARN(1, "powerdomain: %s: pwrdm is null\n", __func__);
+		return -ENODEV;
+	}
+
+	/* FIXME-HASH: Check this later.. it's for test only tho */
+	count = pwrdm->state_counter[PWRDM_POWER_OFF]; // count.state[PWRDM_POWER_OFF];
+	count += pwrdm->ret_logic_off_counter;
+
+	for (i = 0; i < pwrdm->banks; i++)
+		count += pwrdm->ret_mem_off_counter[i];
+
+	/*
+	 * Context loss count has to be a non-negative value. Clear the sign
+	 * bit to get a value range from 0 to INT_MAX.
+	 */
+	count &= INT_MAX;
+
+	pr_debug("powerdomain: %s: context loss count = %d\n",
+		 pwrdm->name, count);
+
+	return count;
+}
+
+/**
  * pwrdm_wait_transition - wait for powerdomain power transition to finish
  * @pwrdm: struct powerdomain * to wait for
  *
