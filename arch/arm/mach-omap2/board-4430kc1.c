@@ -71,9 +71,9 @@
 
 #define OMAP4_LCD_EN_GPIO		28
 
-#define OMAP4_TOUCH_RESET_GPIO			18
+#define OMAP4_TOUCH_RESET_GPIO		18
 #define OMAP4_TOUCH_IRQ_1		35
-#define OMAP4_CHARGER_IRQ       7
+#define OMAP4_CHARGER_IRQ       	7
 #define OMAP4SDP_MDM_PWR_EN_GPIO	157
 #define OMAP_UART_GPIO_MUX_MODE_143	143
 
@@ -82,13 +82,13 @@
 #define OMAP4_ADI7526_5V_EN		56
 #endif
 
-#define LED_SEC_DISP_GPIO 27
-#define DSI2_GPIO_59	59
-#define PANEL_IRQ       34
+#define LED_SEC_DISP_GPIO 		27
+#define DSI2_GPIO_59			59
+#define PANEL_IRQ       		34
 
-#define LED_PWM2ON		0x03
-#define LED_PWM2OFF		0x04
-#define LED_TOGGLE3		0x92
+#define LED_PWM2ON			0x03
+#define LED_PWM2OFF			0x04
+#define LED_TOGGLE3			0x92
 
 #define GPIO_WIFI_PMENA		54
 #define GPIO_WIFI_IRQ		53
@@ -183,15 +183,6 @@ static void __init quanta_boardids(void)
 }
 
 static struct spi_board_info sdp4430_spi_board_info[] __initdata = {
-#if 0
-	{
-		.modalias               = "ks8851",
-		.bus_num                = 1,
-		.chip_select            = 0,
-		.max_speed_hz           = 24000000,
-		.irq                    = ETH_KS8851_IRQ,
-	},
-#endif
 	{
 		.modalias		= "otter1_disp_spi",
 		.bus_num		= 4,     /* McSPI4 */
@@ -200,80 +191,6 @@ static struct spi_board_info sdp4430_spi_board_info[] __initdata = {
 	},
 };
 
-#if 0
-static struct gpio_led sdp4430_gpio_leds[] = {
-	{
-		.name	= "omap4:green:debug0",
-		.gpio	= 61,
-	},
-	{
-		.name	= "omap4:green:debug1",
-		.gpio	= 30,
-	},
-	{
-		.name	= "omap4:green:debug2",
-		.gpio	= 7,
-	},
-	{
-		.name	= "omap4:green:debug3",
-		.gpio	= 8,
-	},
-	{
-		.name	= "omap4:green:debug4",
-		.gpio	= 50,
-	},
-	{
-		.name	= "blue",
-		.default_trigger = "timer",
-		.gpio	= 169,
-	},
-	{
-		.name	= "red",
-		.default_trigger = "timer",
-		.gpio	= 170,
-	},
-	{
-		.name	= "green",
-		.default_trigger = "timer",
-		.gpio	= 139,
-	},
-};
-
-static struct gpio_led_platform_data sdp4430_led_data = {
-	.leds	= sdp4430_gpio_leds,
-	.num_leds	= ARRAY_SIZE(sdp4430_gpio_leds),
-};
-
-static struct platform_device sdp4430_leds_gpio = {
-	.name	= "leds-gpio",
-	.id	= -1,
-	.dev	= {
-		.platform_data = &sdp4430_led_data,
-	},
-};
-
-static struct led_pwm sdp4430_pwm_leds[] = {
-	{
-	.name = "battery-led",
-	.pwm_id = 1,
-	.max_brightness = 255,
-	.pwm_period_ns = 7812500,
-	},
-};
-
-static struct led_pwm_platform_data sdp4430_pwm_data = {
-	.num_leds = 1,
-	.leds = sdp4430_pwm_leds,
-};
-
-static struct platform_device sdp4430_leds_pwm = {
-	.name	= "leds_pwm",
-	.id	= -1,
-	.dev	= {
-		.platform_data = &sdp4430_pwm_data,
-	},
-};
-#endif
 
 static void __init sdp4430_init_display_led(void)
 {
@@ -300,16 +217,6 @@ static void sdp4430_set_primary_brightness(u8 brightness)
 	}
 }
 
-#if 0
-static void sdp4430_set_secondary_brightness(u8 brightness)
-{
-	if (brightness > 0)
-		brightness = 1;
-
-	gpio_set_value(LED_SEC_DISP_GPIO, brightness);
-}
-#endif
-
 static struct omap4430_sdp_disp_led_platform_data sdp4430_disp_led_data = {
 	.flags = LEDS_CTRL_AS_ONE_DISPLAY,
 	.display_led_init = sdp4430_init_display_led,
@@ -317,24 +224,6 @@ static struct omap4430_sdp_disp_led_platform_data sdp4430_disp_led_data = {
 	//.secondary_display_set = sdp4430_set_secondary_brightness,
 };
 
-#if 0
-static void __init omap_disp_led_init(void)
-{
-	/* Seconday backlight control */
-	gpio_request(DSI2_GPIO_59, "dsi2_bl_gpio");
-	gpio_direction_output(DSI2_GPIO_59, 0);
-
-	if (sdp4430_disp_led_data.flags & LEDS_CTRL_AS_ONE_DISPLAY) {
-		pr_info("%s: Configuring as one display LED\n", __func__);
-		gpio_set_value(DSI2_GPIO_59, 1);
-	}
-	gpio_request(LED_SEC_DISP_GPIO, "dsi1_bl_gpio");
-	gpio_direction_output(LED_SEC_DISP_GPIO, 1);
-	mdelay(120);
-	gpio_set_value(LED_SEC_DISP_GPIO, 0);
-
-}
-#endif
 
 static struct platform_device sdp4430_disp_led = {
 	.name	=	"display_led",
@@ -389,49 +278,6 @@ static struct platform_device kc1_led_device = {
     },
 };
 
-#if 0
-static int sdp4430_panel_enable_otter1(struct omap_dss_device *dssdev)
-{
-#if 0
-	gpio_request(DLP_4430_GPIO_59, "DLP DISPLAY SEL");
-	gpio_direction_output(DLP_4430_GPIO_59, 0);
-	gpio_request(DLP_4430_GPIO_45, "DLP PARK");
-	gpio_direction_output(DLP_4430_GPIO_45, 0);
-	gpio_request(DLP_4430_GPIO_40, "DLP PHY RESET");
-	gpio_direction_output(DLP_4430_GPIO_40, 0);
-	mdelay(100);
-
-	gpio_set_value(DLP_4430_GPIO_45, 1);
-	gpio_set_value(DLP_4430_GPIO_40, 1);
-	mdelay(300);
-
-	gpio_request(101, "OTTER1 LCD PWR EN");
-	gpio_direction_output(101, 1);
-	gpio_request(102, "OTTER1 BL PWR EN");
-	gpio_direction_output(102, 1);
-	gpio_request(103, "OTTER1 CABC0");
-	gpio_direction_output(103, 0);
-	gpio_request(104, "OTTER1 CABC1");
-	gpio_direction_output(104, 0);
-#else
-	gpio_request(37, "OMAP_RGB_SHTDN");
-	gpio_direction_output(37, 1);
-	gpio_set_value(37, 1);
-#endif
-
-	return 0;
-}
-
-
-
-static void sdp4430_panel_disable_otter1(struct omap_dss_device *dssdev)
-
-{
-	gpio_set_value(DLP_4430_GPIO_40, 0);
-	gpio_set_value(DLP_4430_GPIO_45, 0);
-}
-#endif
-
 static struct omap_dss_device sdp4430_otter1_device = {
 	.name			= "lcd2",
 	.driver_name		= "otter1_panel_drv",
@@ -446,171 +292,9 @@ static struct omap_dss_device sdp4430_otter1_device = {
         },
 };
 
-#if 0
-static struct nokia_dsi_panel_data dsi_panel = {
-		.name	= "taal",
-		.reset_gpio	= 102,
-		.use_ext_te	= false,
-		.ext_te_gpio	= 101,
-		.use_esd_check	= false,
-		.set_backlight	= NULL,
-};
-
-static struct nokia_dsi_panel_data dsi2_panel = {
-		.name   = "taal2",
-		.reset_gpio     = 104,
-		.use_ext_te     = false,
-		.ext_te_gpio    = 103,
-		.use_esd_check  = false,
-		.set_backlight  = NULL,
-};
-
-static struct omap_dss_device sdp4430_lcd_device = {
-	.name			= "lcd",
-	.driver_name		= "taal",
-	.type			= OMAP_DISPLAY_TYPE_DSI,
-	.data			= &dsi_panel,
-	.phy.dsi		= {
-		.clk_lane	= 1,
-		.clk_pol	= 0,
-		.data1_lane	= 2,
-		.data1_pol	= 0,
-		.data2_lane	= 3,
-		.data2_pol	= 0,
-		.div		= {
-			.lck_div	= 1,
-			.pck_div	= 5,
-			.regm		= 150,
-			.regn		= 17,
-			.regm_dispc	= 4,
-			.regm_dsi	= 4,
-			.lp_clk_div	= 8,
-		},
-	},
-	.channel		= OMAP_DSS_CHANNEL_LCD,
-};
-
-static struct omap_dss_device sdp4430_lcd2_device = {
-	.name			= "lcd2",
-	.driver_name		= "taal2",
-	.type			= OMAP_DISPLAY_TYPE_DSI,
-	.data			= &dsi2_panel,
-	.phy.dsi		= {
-		.clk_lane	= 1,
-		.clk_pol	= 0,
-		.data1_lane	= 2,
-		.data1_pol	= 0,
-		.data2_lane	= 3,
-		.data2_pol	= 0,
-		.div		= {
-			.lck_div	= 1,
-			.pck_div	= 5,
-			.regm		= 150,
-			.regn		= 17,
-			.regm_dispc	= 4,
-			.regm_dsi	= 4,
-			.lp_clk_div	= 8,
-		},
-	},
-	.channel		= OMAP_DSS_CHANNEL_LCD2,
-};
-#endif
-
-#ifdef CONFIG_OMAP2_DSS_HDMI
-static int sdp4430_panel_enable_hdmi(struct omap_dss_device *dssdev)
-{
-	gpio_request(HDMI_GPIO_60 , "hdmi_gpio_60");
-	gpio_request(HDMI_GPIO_41 , "hdmi_gpio_41");
-	gpio_direction_output(HDMI_GPIO_60, 1);
-	gpio_direction_output(HDMI_GPIO_41, 1);
-	gpio_set_value(HDMI_GPIO_60, 0);
-	gpio_set_value(HDMI_GPIO_41, 0);
-	mdelay(5);
-	gpio_set_value(HDMI_GPIO_60, 1);
-	gpio_set_value(HDMI_GPIO_41, 1);
-	return 0;
-}
-
-static void sdp4430_panel_disable_hdmi(struct omap_dss_device *dssdev)
-{
-}
-
-static __attribute__ ((unused)) void __init sdp4430_hdmi_init(void)
-{
-}
-
-static struct omap_dss_device sdp4430_hdmi_device = {
-	.name = "hdmi",
-	.driver_name = "hdmi_panel",
-	.type = OMAP_DISPLAY_TYPE_HDMI,
-	.phy.dpi.data_lines = 24,
-	.platform_enable = sdp4430_panel_enable_hdmi,
-	.platform_disable = sdp4430_panel_disable_hdmi,
-	.channel = OMAP_DSS_CHANNEL_DIGIT,
-};
-#endif /* CONFIG_OMAP2_DSS_HDMI */
-
-#ifdef CONFIG_PANEL_PICO_DLP
-static int sdp4430_panel_enable_pico_DLP(struct omap_dss_device *dssdev)
-{
-	/* int i = 0; */
-
-	gpio_request(DLP_4430_GPIO_59, "DLP DISPLAY SEL");
-	gpio_direction_output(DLP_4430_GPIO_59, 0);
-	gpio_request(DLP_4430_GPIO_45, "DLP PARK");
-	gpio_direction_output(DLP_4430_GPIO_45, 0);
-	gpio_request(DLP_4430_GPIO_40, "DLP PHY RESET");
-	gpio_direction_output(DLP_4430_GPIO_40, 0);
-	/* gpio_request(DLP_4430_GPIO_44, "DLP READY RESET");
-	gpio_direction_input(DLP_4430_GPIO_44); */
-	mdelay(500);
-
-	gpio_set_value(DLP_4430_GPIO_59, 1);
-	gpio_set_value(DLP_4430_GPIO_45, 1);
-	mdelay(1000);
-
-	gpio_set_value(DLP_4430_GPIO_40, 1);
-	mdelay(1000);
-
-	/* FIXME with the MLO gpio changes,
-		gpio read is not retuning correct value even though
-		it is  set in hardware so the check is comment
-		till the problem is fixed */
-	/* while (i == 0)
-		i = gpio_get_value(DLP_4430_GPIO_44); */
-
-	mdelay(2000);
-	return 0;
-}
-
-static void sdp4430_panel_disable_pico_DLP(struct omap_dss_device *dssdev)
-{
-	gpio_set_value(DLP_4430_GPIO_40, 0);
-	gpio_set_value(DLP_4430_GPIO_45, 0);
-	gpio_set_value(DLP_4430_GPIO_59, 0);
-}
-
-static struct omap_dss_device sdp4430_picoDLP_device = {
-	.name			= "pico_DLP",
-	.driver_name		= "picoDLP_panel",
-	.type			= OMAP_DISPLAY_TYPE_DPI,
-	.phy.dpi.data_lines	= 24,
-	.platform_enable	= sdp4430_panel_enable_pico_DLP,
-	.platform_disable	= sdp4430_panel_disable_pico_DLP,
-	.channel		= OMAP_DSS_CHANNEL_LCD2,
-};
-#endif /* CONFIG_PANEL_PICO_DLP */
 
 static struct omap_dss_device *sdp4430_dss_devices[] = {
-//	&sdp4430_lcd_device,
-//	&sdp4430_lcd2_device,
 	&sdp4430_otter1_device,
-#ifdef CONFIG_OMAP2_DSS_HDMI
-	&sdp4430_hdmi_device,
-#endif /* CONFIG_OMAP2_DSS_HDMI */
-#ifdef CONFIG_PANEL_PICO_DLP
-	&sdp4430_picoDLP_device,
-#endif /* CONFIG_PANEL_PICO_DLP */
 };
 
 static struct omap_dss_board_info sdp4430_dss_data = {
@@ -619,74 +303,10 @@ static struct omap_dss_board_info sdp4430_dss_data = {
 	.default_device	=	&sdp4430_otter1_device,
 };
 
-#if 0
-static unsigned long retry_suspend;
-int plat_kim_suspend(struct platform_device *pdev, pm_message_t state)
-{
-	struct kim_data_s *kim_gdata;
-	struct st_data_s *core_data;
-	kim_gdata = dev_get_drvdata(&pdev->dev);
-	core_data = kim_gdata->core_data;
-	 if (st_ll_getstate(core_data) != ST_LL_INVALID) {
-		 /*Prevent suspend until sleep indication from chip*/
-		   while(st_ll_getstate(core_data) != ST_LL_ASLEEP &&
-				   (retry_suspend++ < 5)) {
-			   return -1;
-		   }
-	 }
-	return 0;
-}
-int plat_kim_resume(struct platform_device *pdev)
-{
-	retry_suspend = 0;
-	return 0;
-}
-/* wl128x BT, FM, GPS connectivity chip */
-struct ti_st_plat_data wilink_pdata = {
-	.nshutdown_gpio = 55,
-	.dev_name = BLUETOOTH_UART_DEV_NAME,
-	.flow_cntrl = 1,
-	.baud_rate = 3000000,
-	.suspend = plat_kim_suspend,
-	.resume = plat_kim_resume,
-};
-static struct platform_device wl128x_device = {
-	.name		= "kim",
-	.id		= -1,
-	.dev.platform_data = &wilink_pdata,
-};
-static struct platform_device btwilink_device = {
-	.name = "btwilink",
-	.id = -1,
-};
 
-#ifdef CONFIG_TI_ST
-static bool is_bt_active(void)
-{
-	struct platform_device  *pdev;
-	struct kim_data_s       *kim_gdata;
-
-	pdev = &wl128x_device;
-	kim_gdata = dev_get_drvdata(&pdev->dev);
-	if (st_ll_getstate(kim_gdata->core_data) != ST_LL_ASLEEP &&
-			st_ll_getstate(kim_gdata->core_data) != ST_LL_INVALID)
-		return true;
-	else
-		return false;
-}
-#else
-#define is_bt_active NULL
-#endif
-#endif
 
 static struct platform_device *sdp4430_devices[] __initdata = {
 	&sdp4430_disp_led,
-//	&sdp4430_proximity_device,
-//	&sdp4430_leds_pwm,
-//	&sdp4430_leds_gpio,
-//	&wl128x_device,
-//	&btwilink_device,
-//	&sdp4430_hdmi_audio_device,
 	&sdp4430_keypad_led,
         &sdp4430_aic3110,
 #if defined(CONFIG_SENSORS_OMAP_BANDGAP)
@@ -1079,12 +699,6 @@ static struct twl4030_madc_platform_data sdp4430_gpadc_data = {
 };
 #define SUMMIT_STAT          31
 
-#if 0
-static struct twl6030_qcharger_platform_data kc1_charger_data={
-        .interrupt_pin = OMAP4_CHARGER_IRQ,
-};
-#endif
-
 static struct regulator_init_data sdp4430_clk32kg = {
        .constraints = {
 		.valid_ops_mask         = REGULATOR_CHANGE_STATUS,
@@ -1109,11 +723,6 @@ static struct twl4030_platform_data sdp4430_twldata = {
 	.usb		= &omap4_usbphy_data,
 	.clk32kg        = &sdp4430_clk32kg,
 	.madc           = &sdp4430_gpadc_data,
-//	.qcharger       = &kc1_charger_data,
-//	.bci            = &sdp4430_bci_data,
-
-	/* children */
-//	.codec          = &twl6040_codec,
 };
 
 
@@ -1309,7 +918,6 @@ static int __init omap4_i2c_init(void)
 		sdp4430_i2c_4_boardinfo_pvt, ARRAY_SIZE(sdp4430_i2c_4_boardinfo_pvt));
 	return 0;
 }
-#if 1
 static void __init omap4_display_init(void)
 {
 	void __iomem *phymux_base = NULL;
@@ -1329,39 +937,11 @@ static void __init omap4_display_init(void)
 
 	iounmap(phymux_base);
 }
-#else
-static void __init omap4_display_init(void)
-{
-	void __iomem *phymux_base = NULL;
-	u32 val = 0xFFFFC000;
-
-	phymux_base = ioremap(0x4A100000, 0x1000);
-
-	/* Turning on DSI PHY Mux*/
-	__raw_writel(val, phymux_base + 0x618);
-	/* Set mux to choose GPIO 101 for Taal 1 ext te line*/
-	val = __raw_readl(phymux_base + 0x90);
-	val = (val & 0xFFFFFFE0) | 0x11B;
-	__raw_writel(val, phymux_base + 0x90);
-
-	/* Set mux to choose GPIO 103 for Taal 2 ext te line*/
-	val = __raw_readl(phymux_base + 0x94);
-	val = (val & 0xFFFFFFE0) | 0x11B;
-	__raw_writel(val, phymux_base + 0x94);
-	iounmap(phymux_base);
-	/* Panel Taal reset and backlight GPIO init */
-	gpio_request(dsi_panel.reset_gpio, "dsi1_en_gpio");
-	gpio_direction_output(dsi_panel.reset_gpio, 0);
-	//gpio_request(dsi2_panel.reset_gpio, "dsi2_en_gpio");
-	//gpio_direction_output(dsi2_panel.reset_gpio, 0);
-}
-#endif
 
 #ifdef CONFIG_TOUCHSCREEN_ILITEK
 // chris 2011_0124
 static void omap_ilitek_init(void)
 {
-#ifndef CONFIG_DEMO_HDMI
 	//printk("~~~~~~~~%s\n", __func__);
 	omap_mux_init_signal("dpm_emu7.gpio_18", \
                 OMAP_PIN_OUTPUT | \
@@ -1373,29 +953,6 @@ static void omap_ilitek_init(void)
 	}
         gpio_direction_output(OMAP4_TOUCH_RESET_GPIO, 0);
         gpio_set_value(OMAP4_TOUCH_RESET_GPIO, 1);
-#else
-	omap_mux_init_signal("gpmc_nadv_ale.gpio_56", \
-                OMAP_PIN_OUTPUT | \
-                OMAP_PIN_OFF_NONE);
-        
-        if (gpio_request(OMAP4_ADI7526_5V_EN , "adi7526_5v_en_gpio_56") <0 ){
-		pr_err("ADI7526_5V_EN request failed\n");
-                return;
-	}
-        gpio_direction_output(OMAP4_ADI7526_5V_EN, 0);
-        gpio_set_value(OMAP4_ADI7526_5V_EN, 1);
-
-	omap_mux_init_signal("abe_dmic_din3.gpio_122", \
-		OMAP_PIN_INPUT | \
-		OMAP_PIN_OFF_NONE);
-
-	if (gpio_request(OMAP4_ADI7526_IRQ, "ADI7526 IRQ") < 0) {
-		pr_err("ADI7526 IRQ GPIO request failed\n");
-		return;
-	}
-	gpio_direction_input(OMAP4_ADI7526_IRQ);
-
-#endif
 
 	if (gpio_request(OMAP4_TOUCH_IRQ_1, "Touch IRQ") < 0) {
 		pr_err("Touch IRQ GPIO request failed\n");
@@ -1404,22 +961,6 @@ static void omap_ilitek_init(void)
 	gpio_direction_input(OMAP4_TOUCH_IRQ_1);
 }
 #endif //CONFIG_TOUCHSCREEN_ILITEK
-
-//chris 2010_1223 start
-#if 0
-static void panel_enable(void)
-{
-    omap_mux_init_signal("dpm_emu17.gpio_28", \
-	OMAP_PIN_OUTPUT | \
-	OMAP_PIN_OFF_NONE);
-	if (gpio_request(OMAP4_LCD_EN_GPIO, "gpio 28") < 0) {
-		pr_err("GPIO 28 request failed\n");
-		return;
-	}
-	gpio_direction_output(OMAP4_LCD_EN_GPIO, 1);
-}
-#endif
-//chris 2010_1223 end
 
 /*
  * As OMAP4430 mux HSI and USB signals, when HSI is used (for instance HSI
@@ -1436,65 +977,6 @@ static char *modem_ipc = "n/a";
 
 module_param(modem_ipc, charp, 0);
 MODULE_PARM_DESC(modem_ipc, "Modem IPC setting");
-
-#if 0
-static void omap_4430hsi_pad_conf(void)
-{
-	/*
-	 * HSI pad conf: hsi1_ca/ac_wake/flag/data/ready
-	 * Also configure gpio_92/95/157/187 used by modem
-	 */
-
-	/* hsi1_cawake */
-	omap_mux_init_signal("usbb1_ulpitll_clk.hsi1_cawake", \
-		OMAP_PIN_INPUT_PULLDOWN | \
-		OMAP_PIN_OFF_NONE | \
-		OMAP_PIN_OFF_WAKEUPENABLE);
-	/* hsi1_caflag */
-	omap_mux_init_signal("usbb1_ulpitll_dir.hsi1_caflag", \
-		OMAP_PIN_INPUT | \
-		OMAP_PIN_OFF_NONE);
-	/* hsi1_cadata */
-	omap_mux_init_signal("usbb1_ulpitll_stp.hsi1_cadata", \
-		OMAP_PIN_INPUT | \
-		OMAP_PIN_OFF_NONE);
-	/* hsi1_acready */
-	omap_mux_init_signal("usbb1_ulpitll_nxt.hsi1_acready", \
-		OMAP_PIN_OUTPUT | \
-		OMAP_PIN_OFF_OUTPUT_LOW);
-	/* hsi1_acwake */
-	omap_mux_init_signal("usbb1_ulpitll_dat0.hsi1_acwake", \
-		OMAP_PIN_OUTPUT | \
-		OMAP_PIN_OFF_NONE);
-	/* hsi1_acdata */
-	omap_mux_init_signal("usbb1_ulpitll_dat1.hsi1_acdata", \
-		OMAP_PIN_OUTPUT | \
-		OMAP_PIN_OFF_NONE);
-	/* hsi1_acflag */
-	omap_mux_init_signal("usbb1_ulpitll_dat2.hsi1_acflag", \
-		OMAP_PIN_OUTPUT | \
-		OMAP_PIN_OFF_NONE);
-	/* hsi1_caready */
-	omap_mux_init_signal("usbb1_ulpitll_dat3.hsi1_caready", \
-		OMAP_PIN_INPUT | \
-		OMAP_PIN_OFF_NONE);
-	/* gpio_92 */
-	omap_mux_init_signal("usbb1_ulpitll_dat4.gpio_92", \
-		OMAP_PULL_ENA);
-	/* gpio_95 */
-	omap_mux_init_signal("usbb1_ulpitll_dat7.gpio_95", \
-		OMAP_PIN_INPUT_PULLDOWN | \
-		OMAP_PIN_OFF_NONE);
-	/* gpio_157 */
-	omap_mux_init_signal("usbb2_ulpitll_clk.gpio_157", \
-		OMAP_PIN_OUTPUT | \
-		OMAP_PIN_OFF_NONE);
-	/* gpio_187 */
-	omap_mux_init_signal("sys_boot3.gpio_187", \
-		OMAP_PIN_OUTPUT | \
-		OMAP_PIN_OFF_NONE);
-}
-#endif
 
 static void enable_board_wakeup_source(void)
 {
