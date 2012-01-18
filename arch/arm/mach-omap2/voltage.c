@@ -1379,6 +1379,7 @@ static void omap_abb_enable(struct omap_vdd_info *vdd_info)
   * omap_abb_disable - Clears ABB_LDO_SETUP.SR2EN bit
   * Disables ABB.
   */
+#if 0
 static void omap_abb_disable(struct omap_vdd_info *vdd_info)
 {
 	if (cpu_is_omap3630())
@@ -1390,6 +1391,7 @@ static void omap_abb_disable(struct omap_vdd_info *vdd_info)
 			OMAP4430_PRM_DEVICE_MOD,
 			vdd_info->omap_abb_reg_val.prm_abb_ldo_setup_idx);
 }
+#endif
 
 /**
  * omap*_abb_change_opp - set LDO mode & poll status until transition completes

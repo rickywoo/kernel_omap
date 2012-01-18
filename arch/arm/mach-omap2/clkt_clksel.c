@@ -99,6 +99,7 @@ u8 _get_div_and_fieldval(struct clk *src_clk, struct clk *clk,
 	const struct clksel *clks;
 	const struct clksel_rate *clkr, *max_clkr;
 	u8 max_div = 0;
+	max_clkr = NULL;
 
 	clks = _get_clksel_by_parent(clk, src_clk);
 	if (!clks)

@@ -915,7 +915,7 @@ void __init omap_display_init(struct omap_dss_board_info *board_data)
 		pdata.board_data	= board_data;
 		pdata.board_data->get_last_off_on_transaction_id = NULL;
 		/* FIXME-HASH: added context_loss_count for new dss driver */
-		pdata.board_data->get_context_loss_count = omap_device_get_context_loss_count;
+		pdata.board_data->get_context_loss_count = omap_pm_get_dev_context_loss_count; // omap_device_get_context_loss_count;
 
 		pdata.device_enable	= omap_device_enable;
 		pdata.device_idle	= omap_device_idle;

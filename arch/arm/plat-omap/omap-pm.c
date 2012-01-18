@@ -678,13 +678,13 @@ int omap_pm_set_min_mpu_freq(struct device *dev, unsigned long f)
 		 * constraints. If that is the case, cpufreq wins.
 		 */
 		if ((f/1000) < policy.min) {
-			printk(KERN_WARNING "%s: called with freq below min freq! (f=%lu min=%lu)\n",
+			printk(KERN_WARNING "%s: called with freq below min freq! (f=%lu min=%u)\n",
 			       __func__, f/1000, policy.min);
                       f = policy.min * 1000;
 		}
 
 		if ((f/1000) > policy.max) {
-			printk(KERN_WARNING "%s: called with freq above max freq! (f=%lu max=%lu)\n",
+			printk(KERN_WARNING "%s: called with freq above max freq! (f=%lu max=%u)\n",
 			       __func__, f/1000, policy.max);
 			f = policy.max * 1000;
 		}

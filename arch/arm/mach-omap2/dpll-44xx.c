@@ -564,9 +564,9 @@ int omap4_dpll_low_power_cascade_enter()
 	struct clk *l4_wkup_clk_mux_ck, *lp_clk_div_ck;
 	struct clk *pmd_stm_clock_mux_ck, *pmd_trace_clk_mux_ck;
 	struct clockdomain *emu_sys_44xx_clkdm, *abe_44xx_clkdm;
-	struct device *mpu_dev;
-	struct cpufreq_policy *cp;
-	struct omap_opp *opp;
+	// struct device *mpu_dev;
+	// struct cpufreq_policy *cp;
+	// struct omap_opp *opp;
 	struct voltagedomain *vdd_mpu, *vdd_iva, *vdd_core;
 
 	dpll_abe_ck = clk_get(NULL, "dpll_abe_ck");
@@ -830,7 +830,7 @@ int omap4_dpll_low_power_cascade_exit()
 	struct clk *l4_wkup_clk_mux_ck, *lp_clk_div_ck;
 	struct clk *pmd_stm_clock_mux_ck, *pmd_trace_clk_mux_ck;
 	struct clockdomain *emu_sys_44xx_clkdm, *abe_44xx_clkdm;
-	struct cpufreq_policy *cp;
+	// struct cpufreq_policy *cp;
 	struct voltagedomain *vdd_mpu, *vdd_iva, *vdd_core;
 
 	sys_clkin_ck = clk_get(NULL, "sys_clkin_ck");

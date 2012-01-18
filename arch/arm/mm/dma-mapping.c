@@ -327,7 +327,7 @@ void *
 dma_alloc_so_coherent(struct device *dev, size_t size, dma_addr_t *handle,
 	gfp_t gfp)
 {
-	void *memory;
+	// void *memory;
 
 	return __dma_alloc(dev, size, handle, gfp,
 		pgprot_so_dmacoherent(pgprot_kernel));

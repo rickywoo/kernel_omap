@@ -485,8 +485,7 @@ static void omap_init_aess(void)
 		return;
 	}
 
-	/* FIXME-HASH: Replaced w/ actual context loss */
-	pdata->get_context_loss_count = omap_device_get_context_loss_count; //omap_pm_get_dev_context_loss_count;
+	pdata->get_context_loss_count = omap_pm_get_dev_context_loss_count;
 	pdata->enter_dpll_cascade = omap4_dpll_low_power_cascade_check_entry;
 	pdata->exit_dpll_cascade = omap4_dpll_low_power_cascade_exit;
 

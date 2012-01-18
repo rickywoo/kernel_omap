@@ -108,10 +108,13 @@
 #define CONSOLE_UART UART3
 
 static struct wake_lock uart_lock;
+
+#ifdef CONFIG_DEMO_HDMI
 static struct platform_device sdp4430_hdmi_audio_device = {
 	.name		= "hdmi-dai",
 	.id		= -1,
 };
+#endif
 
 static struct platform_device sdp4430_aic3110 = {
         .name           = "tlv320aic3110-codec",
@@ -297,6 +300,7 @@ static void sdp4430_set_primary_brightness(u8 brightness)
 	}
 }
 
+#if 0
 static void sdp4430_set_secondary_brightness(u8 brightness)
 {
 	if (brightness > 0)
@@ -304,6 +308,7 @@ static void sdp4430_set_secondary_brightness(u8 brightness)
 
 	gpio_set_value(LED_SEC_DISP_GPIO, brightness);
 }
+#endif
 
 static struct omap4430_sdp_disp_led_platform_data sdp4430_disp_led_data = {
 	.flags = LEDS_CTRL_AS_ONE_DISPLAY,
@@ -312,6 +317,7 @@ static struct omap4430_sdp_disp_led_platform_data sdp4430_disp_led_data = {
 	//.secondary_display_set = sdp4430_set_secondary_brightness,
 };
 
+#if 0
 static void __init omap_disp_led_init(void)
 {
 	/* Seconday backlight control */
@@ -328,6 +334,7 @@ static void __init omap_disp_led_init(void)
 	gpio_set_value(LED_SEC_DISP_GPIO, 0);
 
 }
+#endif
 
 static struct platform_device sdp4430_disp_led = {
 	.name	=	"display_led",
@@ -382,6 +389,7 @@ static struct platform_device kc1_led_device = {
     },
 };
 
+#if 0
 static int sdp4430_panel_enable_otter1(struct omap_dss_device *dssdev)
 {
 #if 0
@@ -422,6 +430,7 @@ static void sdp4430_panel_disable_otter1(struct omap_dss_device *dssdev)
 	gpio_set_value(DLP_4430_GPIO_40, 0);
 	gpio_set_value(DLP_4430_GPIO_45, 0);
 }
+#endif
 
 static struct omap_dss_device sdp4430_otter1_device = {
 	.name			= "lcd2",
@@ -432,8 +441,8 @@ static struct omap_dss_device sdp4430_otter1_device = {
 	//.platform_disable	= sdp4430_panel_disable_otter1,
 	.channel		= OMAP_DSS_CHANNEL_LCD2,
         .panel          = {
-        .width_in_um = 158000,
-        .height_in_um = 92000,
+        	.width_in_um = 10240000, //.width_in_um = 158,
+	        .height_in_um = 6000000, // .height_in_um = 92,
         },
 };
 
@@ -1069,103 +1078,10 @@ static struct twl4030_madc_platform_data sdp4430_gpadc_data = {
 	.irq_line	= 1,
 };
 #define SUMMIT_STAT          31
+
+#if 0
 static struct twl6030_qcharger_platform_data kc1_charger_data={
         .interrupt_pin = OMAP4_CHARGER_IRQ,
-};
-#if 0
-static int sdp4430_batt_table[] = {
-	/* adc code for temperature in degree C */
-	929, 925, /* -2 ,-1 */
-	920, 917, 912, 908, 904, 899, 895, 890, 885, 880, /* 00 - 09 */
-	875, 869, 864, 858, 853, 847, 841, 835, 829, 823, /* 10 - 19 */
-	816, 810, 804, 797, 790, 783, 776, 769, 762, 755, /* 20 - 29 */
-	748, 740, 732, 725, 718, 710, 703, 695, 687, 679, /* 30 - 39 */
-	671, 663, 655, 647, 639, 631, 623, 615, 607, 599, /* 40 - 49 */
-	591, 583, 575, 567, 559, 551, 543, 535, 527, 519, /* 50 - 59 */
-	511, 504, 496 /* 60 - 62 */
-};
-
-static struct twl4030_bci_platform_data sdp4430_bci_data = {
-	.monitoring_interval		= 10,
-	.max_charger_currentmA		= 1500,
-	.max_charger_voltagemV		= 4560,
-	.max_bat_voltagemV		= 4200,
-	.low_bat_voltagemV		= 3300,
-	.battery_tmp_tbl		= sdp4430_batt_table,
-	.tblsize			= ARRAY_SIZE(sdp4430_batt_table),
-};
-#endif
-#if 0
-static void omap4_audio_conf(void)
-{
-	/* twl6040 naudint */
-	omap_mux_init_signal("sys_nirq2.sys_nirq2", \
-		OMAP_PIN_INPUT_PULLUP);
-}
-
-static int tps6130x_enable(int on)
-{
-        u8 val = 0;
-        int ret;
-
-        ret = twl_i2c_read_u8(TWL_MODULE_AUDIO_VOICE, &val, TWL6040_REG_GPOCTL);
-        if (ret < 0) {
-		pr_err("%s: failed to read GPOCTL %d\n", __func__, ret);
-                return ret;
-	}
-
-	/* TWL6040 GPO2 connected to TPS6130X NRESET */
-	if (on)
-		val |= TWL6040_GPO2;
-	else
-		val &= ~TWL6040_GPO2;
-
-	ret = twl_i2c_write_u8(TWL_MODULE_AUDIO_VOICE, val, TWL6040_REG_GPOCTL);
-	if (ret < 0)
-		pr_err("%s: failed to write GPOCTL %d\n", __func__, ret);
-
-	return ret;
-}
-
-struct tps6130x_platform_data tps6130x_pdata = {
-	.chip_enable	= tps6130x_enable,
-};
-
-static struct regulator_consumer_supply twl6040_vddhf_supply[] = {
-	REGULATOR_SUPPLY("vddhf", "twl6040-codec"),
-};
-
-static struct regulator_init_data twl6040_vddhf = {
-	.constraints = {
-		.min_uV			= 4075000,
-		.max_uV			= 4950000,
-		.apply_uV		= true,
-		.valid_modes_mask	= REGULATOR_MODE_NORMAL
-					| REGULATOR_MODE_STANDBY,
-		.valid_ops_mask		= REGULATOR_CHANGE_VOLTAGE
-					| REGULATOR_CHANGE_MODE
-					| REGULATOR_CHANGE_STATUS,
-	},
-	.num_consumer_supplies	= ARRAY_SIZE(twl6040_vddhf_supply),
-	.consumer_supplies	= twl6040_vddhf_supply,
-	.driver_data		= &tps6130x_pdata,
-};
-
-static struct twl4030_codec_audio_data twl6040_audio = {
-	.vddhf_uV	= 4075000,
-};
-
-static struct twl4030_codec_vibra_data twl6040_vibra = {
-	.max_timeout	= 15000,
-	.initial_vibrate = 0,
-};
-
-static struct twl4030_codec_data twl6040_codec = {
-	.audio		= &twl6040_audio,
-	.vibra		= &twl6040_vibra,
-	.audpwron_gpio	= 127,
-	.naudint_irq	= OMAP44XX_IRQ_SYS_2N,
-	.irq_base	= TWL6040_CODEC_IRQ_BASE,
 };
 #endif
 
@@ -1193,60 +1109,14 @@ static struct twl4030_platform_data sdp4430_twldata = {
 	.usb		= &omap4_usbphy_data,
 	.clk32kg        = &sdp4430_clk32kg,
 	.madc           = &sdp4430_gpadc_data,
-//    .qcharger   =&kc1_charger_data,
+//	.qcharger       = &kc1_charger_data,
 //	.bci            = &sdp4430_bci_data,
 
 	/* children */
 //	.codec          = &twl6040_codec,
 };
 
-#if 0
-static struct bq2415x_platform_data sdp4430_bqdata = {
-	.max_charger_voltagemV = 4200,
-	.max_charger_currentmA = 1550,
-};
 
-/*
- * The Clock Driver Chip (TCXO) on OMAP4 based SDP needs to
- * be programmed to output CLK1 based on REQ1 from OMAP.
- * By default CLK1 is driven based on an internal REQ1INT signal
- * which is always set to 1.
- * Doing this helps gate sysclk (from CLK1) to OMAP while OMAP
- * is in sleep states.
- */
-static struct cdc_tcxo_platform_data sdp4430_cdc_data = {
-	.buf = {
-		CDC_TCXO_REQ4INT | CDC_TCXO_REQ1INT |
-		CDC_TCXO_REQ4POL | CDC_TCXO_REQ3POL |
-		CDC_TCXO_REQ2POL | CDC_TCXO_REQ1POL,
-
-		CDC_TCXO_MREQ4 | CDC_TCXO_MREQ3 |
-		CDC_TCXO_MREQ2 | CDC_TCXO_MREQ1,
-
-		CDC_TCXO_LDOEN1,
-
-		0 },
-};
-
-static struct cma3000_platform_data cma3000_platform_data = {
-	.def_poll_rate = 200,
-	.fuzz_x = 25,
-	.fuzz_y = 25,
-	.fuzz_z = 25,
-	.g_range = CMARANGE_8G,
-	.mode = CMAMODE_MEAS400,
-	.mdthr = 0x8,
-	.mdfftmr = 0x33,
-	.ffthr = 0x8,
-	.irqflags = IRQF_TRIGGER_HIGH,
-};
-
-static struct pico_platform_data picodlp_platform_data[] = {
-	[0] = { /* DLP Controller */
-		.gpio_intr = 40,
-	},
-};
-#endif
 static struct i2c_board_info __initdata sdp4430_i2c_boardinfo_dvt[] = {
 #ifdef CONFIG_BATTERY_BQ27541_Q
     {
@@ -1278,30 +1148,6 @@ static struct i2c_board_info __initdata sdp4430_i2c_boardinfo[] = {
 	     .irq = OMAP44XX_IRQ_SYS_1N,
 	     .platform_data = &sdp4430_twldata,
     },
-#if 0    
-    {
-       I2C_BOARD_INFO("bq27541", 0x55),
-    },
-#endif    
-#if 0
-	{
-		I2C_BOARD_INFO("bq24156", 0x6a),
-		.platform_data = &sdp4430_bqdata,
-	},
-#ifdef CONFIG_BATTERY_BQ27541    
-	{
-		.type = "bq27541_Battery",
-		.addr = 0x55,
-	},
-#endif
-#ifdef CONFIG_SUMMIT_SMB347
-	{
-		.type = "summit_smb347",
-		.addr = 0x06,
-		.irq = OMAP_GPIO_IRQ(OMAP4_CHARGER_IRQ),
-	},
-#endif    
-#endif
 };
 
 static struct i2c_board_info __initdata sdp4430_i2c_2_boardinfo[] = {
@@ -1309,16 +1155,6 @@ static struct i2c_board_info __initdata sdp4430_i2c_2_boardinfo[] = {
 		I2C_BOARD_INFO("ilitek_i2c", 0x41),
 		.irq = OMAP_GPIO_IRQ(OMAP4_TOUCH_IRQ_1),
 	},
-#if 0
-	{
-		I2C_BOARD_INFO("tm12xx_ts_primary", 0x4b),
-		.platform_data = &tm12xx_platform_data[0],
-	},
-	{
-		I2C_BOARD_INFO("picoDLP_i2c_driver", 0x1b),
-		.platform_data = &picodlp_platform_data[0],
-	},
-#endif
 };
 
 static struct i2c_board_info __initdata sdp4430_i2c_3_boardinfo[] = {
@@ -1328,10 +1164,6 @@ static struct i2c_board_info __initdata sdp4430_i2c_3_boardinfo[] = {
 		.irq = OMAP_GPIO_IRQ(OMAP4_ADI7526_IRQ),
 	},
 #endif
-/* Mistral: Updated this array to include the AIC3110 Audio Codec 
-	{
-		I2C_BOARD_INFO("tlv320aic3110", 0x18),
-	},*/
 };
 
 static struct i2c_board_info __initdata sdp4430_i2c_4_boardinfo[] = {
@@ -1573,7 +1405,8 @@ static void omap_ilitek_init(void)
 }
 #endif //CONFIG_TOUCHSCREEN_ILITEK
 
-//chris 2010_1223 start 
+//chris 2010_1223 start
+#if 0
 static void panel_enable(void)
 {
     omap_mux_init_signal("dpm_emu17.gpio_28", \
@@ -1585,6 +1418,7 @@ static void panel_enable(void)
 	}
 	gpio_direction_output(OMAP4_LCD_EN_GPIO, 1);
 }
+#endif
 //chris 2010_1223 end
 
 /*
@@ -1603,6 +1437,7 @@ static char *modem_ipc = "n/a";
 module_param(modem_ipc, charp, 0);
 MODULE_PARM_DESC(modem_ipc, "Modem IPC setting");
 
+#if 0
 static void omap_4430hsi_pad_conf(void)
 {
 	/*
@@ -1659,17 +1494,10 @@ static void omap_4430hsi_pad_conf(void)
 		OMAP_PIN_OUTPUT | \
 		OMAP_PIN_OFF_NONE);
 }
+#endif
 
 static void enable_board_wakeup_source(void)
 {
-	int gpio_val;
-#if 0
-	gpio_val = omap_mux_get_gpio(OMAP4_SFH7741_SENSOR_OUTPUT_GPIO);
-	if ((gpio_val & OMAP44XX_PADCONF_WAKEUPENABLE0) == 0) {
-		gpio_val |= OMAP44XX_PADCONF_WAKEUPENABLE0;
-		omap_mux_set_gpio(gpio_val, OMAP4_SFH7741_SENSOR_OUTPUT_GPIO);
-	}
-#endif
 	/*
 	 * Enable IO daisy for sys_nirq1/2, to be able to
 	 * wakeup from interrupts from PMIC/Audio IC.
@@ -1935,7 +1763,7 @@ static void omap4_4430sdp_wifi_init(void)
 #endif
 static void __init omap_4430sdp_init(void)
 {
-	int status;
+	// int status;
 	int package = OMAP_PACKAGE_CBS;
 
 	quanta_boardids();
@@ -1947,11 +1775,11 @@ static void __init omap_4430sdp_init(void)
 	omap_init_emif_timings();
 
 	enable_rtc_gpio();
-	//omap4_audio_conf();
+	// omap4_audio_conf();
 	ramconsole_init();
 	omap4_i2c_init();
 	omap4_display_init();
-	//omap_disp_led_init();
+	// omap_disp_led_init();
 	platform_add_devices(sdp4430_devices, ARRAY_SIZE(sdp4430_devices));
 
 	gpio_request(0,"sysok");
@@ -1979,34 +1807,15 @@ static void __init omap_4430sdp_init(void)
 		gpio_direction_output(155, 1);
 	}
 
+#ifdef CONFIG_ION
 	/* FIXME-HASH: ADDED FROM 4AI.4 */
 	omap4_register_ion();
+#endif
 #ifdef CONFIG_TIWLAN_SDIO
 	config_wlan_mux();
 #else
 	omap4_4430sdp_wifi_init();
 #endif
-
-	/* Power on the ULPI PHY */
-	//if (gpio_is_valid(OMAP4SDP_MDM_PWR_EN_GPIO)) {
-		/* FIXME: Assumes pad is muxed for GPIO mode */
-	//	gpio_request(OMAP4SDP_MDM_PWR_EN_GPIO, "USBB1 PHY VMDM_3V3");
-	//	gpio_direction_output(OMAP4SDP_MDM_PWR_EN_GPIO, 1);
-	//}
-
-	/*
-	 * Test board-4430sdp.modem_ipc bootargs value to detect if HSI pad
-	 * conf is required
-	 */
-	//pr_info("Configured modem_ipc: %s", modem_ipc);
-	//if (!strcmp(modem_ipc, "hsi")) {
-	//	pr_info("Modem HSI detected, set USB port_mode[0] as UNUSED");
-		/* USBB1 I/O pads conflict with HSI1 port */
-	//	usbhs_pdata.port_mode[0] = OMAP_USBHS_PORT_MODE_UNUSED;
-		/* Setup HSI pad conf for OMAP4430 platform */
-	//	omap_4430hsi_pad_conf();
-	//} else
-	//	pr_info("Modem HSI not detected");
 
 	usb_uhhtll_init(&usbhs_pdata);
 	usb_musb_init(&musb_board_data);

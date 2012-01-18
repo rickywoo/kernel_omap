@@ -90,7 +90,7 @@ static int _init_omap_device(char *name, struct device **new_dev)
 static void omap2_init_processor_devices(void)
 {
 	/* FIXME-HASH: Changed this up to include "fdif" device */
-	struct omap_hwmod *oh;
+	// struct omap_hwmod *oh;
 
 	_init_omap_device("mpu", &mpu_dev);
 
@@ -101,7 +101,7 @@ static void omap2_init_processor_devices(void)
 		_init_omap_device("l3_main_1", &l3_dev);
 		_init_omap_device("dsp", &dsp_dev);
 		_init_omap_device("iva", &iva_dev);
-		_init_omap_device("fdif", &fdif_dev);
+		// _init_omap_device("fdif", &fdif_dev);
 	}
 	else
 		_init_omap_device("l3_main", &l3_dev);

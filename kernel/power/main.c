@@ -240,9 +240,11 @@ pm_trace_store(struct kobject *kobj, struct kobj_attribute *attr,
 power_attr(pm_trace);
 #endif /* CONFIG_PM_TRACE */
 
+#ifdef CONFIG_PM_SLEEP
 #ifdef CONFIG_USER_WAKELOCK
 power_attr(wake_lock);
 power_attr(wake_unlock);
+#endif
 #endif
 
 static struct attribute * g[] = {
