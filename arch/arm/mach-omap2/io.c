@@ -263,6 +263,14 @@ static void __init _omap2_map_common_io(void)
 	omap_vram_reserve_sdram();
 	omap_ipu_reserve_sdram_memblock();
 
+	/* FIXME-HASH: reserve allocations -- double check */
+	/*
+	omapfb_reserve_sdram_memblock();
+	omap_vram_reserve_sdram_memblock();
+	omap_dsp_reserve_sdram_memblock();
+	omap_ipu_reserve_sdram_memblock();
+	*/
+
 #if 0
 	dspbridge_reserve_sdram();
 #endif

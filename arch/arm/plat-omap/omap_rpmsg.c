@@ -216,7 +216,7 @@ static int omap_rpmsg_mbox_callback(struct notifier_block *this,
 static void rpmsg_reset_devices(struct omap_rpmsg_vproc *rpdev)
 {
 	/* wait until previous reset requests have finished */
-	/* FIXME-HASH: kludgey might break */
+	/* FIXME-HASH: changed "flush_work_sync" -> "flush_work" kludgey might break */
 	/* flush_work_sync(&rpdev->reset_work); */
 	flush_work(&rpdev->reset_work);
 	schedule_work(&rpdev->reset_work);

@@ -29,6 +29,8 @@ static struct device *l3_dev;
 static struct device *dsp_dev;
 static struct device *fdif_dev;
 
+bool omap_pm_is_ready_status;
+
 struct device *omap2_get_mpuss_device(void)
 {
 	WARN_ON_ONCE(!mpu_dev);
@@ -89,7 +91,6 @@ static int _init_omap_device(char *name, struct device **new_dev)
  */
 static void omap2_init_processor_devices(void)
 {
-	/* FIXME-HASH: Changed this up to include "fdif" device */
 	// struct omap_hwmod *oh;
 
 	_init_omap_device("mpu", &mpu_dev);
@@ -101,6 +102,7 @@ static void omap2_init_processor_devices(void)
 		_init_omap_device("l3_main_1", &l3_dev);
 		_init_omap_device("dsp", &dsp_dev);
 		_init_omap_device("iva", &iva_dev);
+		/* FIXME-HASH: "_init_omap_device("fdif", &fdif_dev)" Supposed to be here.  No camera.. so not needed. */
 		// _init_omap_device("fdif", &fdif_dev);
 	}
 	else

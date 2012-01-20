@@ -27,7 +27,7 @@
 #include <plat/omap_device.h>
 #include <plat/powerdomain.h>
 
-/* FIXME-HASH: Added */
+/* FIXME-HASH: new includes below [Added] */
 #include <asm/io.h>
 #include <plat/io.h>
 #include "../mach-omap2/prm.h"
@@ -552,7 +552,7 @@ unsigned long omap_pm_cpu_get_freq(void)
 /*
  * Device context loss tracking
  */
-/* FIXME-HASH: Wrote the real function for this in omap_device.c */
+/* FIXME-HASH: "omap_get_dev_context_loss_count" Wrote the real function for this in omap_device.c */
 int omap_pm_get_dev_context_loss_count(struct device *dev)
 {
 	static u32 counter = 1;

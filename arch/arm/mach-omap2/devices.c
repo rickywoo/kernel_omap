@@ -1049,11 +1049,11 @@ static void omap_init_gpu(void)
 		return;
 	}
 
-	/* FIXME-HASH: FROM L27.13.1-Beta */
-	pdata->set_min_bus_tput = omap_pm_set_min_bus_tput;
+	/* FIXME-HASH: "pdata->set_min_bus_tput = omap_pm_set_min_bus_tput" [REMOVED LEFT FROM L27.13.1-Beta] */
+	// pdata->set_min_bus_tput = omap_pm_set_min_bus_tput;
 	pdata->set_max_mpu_wakeup_lat = omap_pm_set_max_mpu_wakeup_lat;
-	/* FIXME-HASH: ADDED FROM 4AI.4 */
-	//pdata->device_scale = omap_device_scale;
+	/* FIXME-HASH: "pdata->device_scale = omap_device_scale" [ADDED FROM 4AI.4] */
+	pdata->device_scale = omap_device_scale;
 	pdata->device_enable = omap_device_enable;
 	pdata->device_idle = omap_device_idle;
 	pdata->device_shutdown = omap_device_shutdown;

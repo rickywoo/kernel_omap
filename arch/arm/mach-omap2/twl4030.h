@@ -10,7 +10,7 @@
 #define __ARCH_ARM_MACH_OMAP3_TWL4030_SCRIPT_H
 
 #include <linux/i2c/twl.h>
-#include "voltage.h"
+#include <plat/voltage.h>
 
 #ifdef CONFIG_TWL4030_POWER
 extern void twl4030_get_scripts(struct twl4030_power_data *t2scripts_data);

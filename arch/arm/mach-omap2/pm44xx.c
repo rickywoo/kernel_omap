@@ -921,6 +921,7 @@ static int __init omap4_pm_init(void)
 
 	omap4_idle_init();
 	omap4_trigger_ioctrl();
+	omap_pm_is_ready_status = true;
 
 err2:
 	return ret;

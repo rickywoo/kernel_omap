@@ -354,7 +354,7 @@ struct omap_hwmod_omap2_prcm {
 struct omap_hwmod_omap4_prcm {
 	void __iomem	*clkctrl_reg;
 	void __iomem	*rstctrl_reg;
-	/* FIXME-HASH: Added from 4AI.4 */
+	/* FIXME-HASH: "context_reg" [Added from 4AI.4] */
 	void __iomem    *context_reg;
 	u8		submodule_wkdep_bit;
 };

@@ -874,7 +874,7 @@ int pwrdm_get_context_loss_count(struct powerdomain *pwrdm)
 		return -ENODEV;
 	}
 
-	/* FIXME-HASH: Check this later.. it's for test only tho */
+	/* FIXME-HASH: "count.state[PWRDM_POWER_OFF]" -> "state_counter[PWRDM_POWER_OFF]" [Check later -- for test only] */
 	count = pwrdm->state_counter[PWRDM_POWER_OFF]; // count.state[PWRDM_POWER_OFF];
 	count += pwrdm->ret_logic_off_counter;
 

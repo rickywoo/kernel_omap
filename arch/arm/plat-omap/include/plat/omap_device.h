@@ -126,6 +126,8 @@ int omap_device_set_rate(struct device *req_dev, struct device *dev,
 			 unsigned long rate);
 unsigned long omap_device_get_rate(struct device *dev);
 
+int omap_device_scale(struct device *req_dev, struct device *target_dev,
+			unsigned long rate);
 /*
  * Entries should be kept in latency order ascending
  *

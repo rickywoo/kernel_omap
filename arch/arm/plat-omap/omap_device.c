@@ -90,6 +90,8 @@
 #include <plat/voltage.h>
 
 #include <mach/omap4-common.h>
+#include "../../mach-omap2/pm.h"
+
 
 /* These parameters are passed to _omap_device_{de,}activate() */
 #define USE_WAKEUP_LAT			0
@@ -989,3 +991,26 @@ unsigned long omap_device_get_rate(struct device *dev)
 	return opp_get_rate(dev);
 }
 EXPORT_SYMBOL(omap_device_get_rate);
+
+/**
+ * omap_device_scale() - Set a new rate at which the device is to operate
+ * @req_dev:	pointer to the device requesting the scaling.
+ * @target_dev:	pointer to the device that is to be scaled
+ * @rate:	the rnew rate for the device.
+ *
+ * This API gets the device opp table associated with this device and
+ * tries putting the device to the requested rate and the voltage domain
+ * associated with the device to the voltage corresponding to the
+ * requested rate. Since multiple devices can be assocciated with a
+ * voltage domain this API finds out the possible voltage the
+ * voltage domain can enter and then decides on the final device
+ * rate.
+ *
+ * Return 0 on success else the error value
+ */
+int omap_device_scale(struct device *req_dev, struct device *target_dev,
+			unsigned long rate)
+{
+	return omap_device_set_rate(req_dev, target_dev, rate);
+}
+EXPORT_SYMBOL(omap_device_scale);

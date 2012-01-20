@@ -113,4 +113,22 @@ extern unsigned int save_secure_ram_context_sz;
 extern unsigned int omap24xx_cpu_suspend_sz;
 extern unsigned int omap34xx_cpu_suspend_sz;
 
+extern bool omap_pm_is_ready_status;
+#if CONFIG_PM
+/**
+ * omap_pm_is_ready() - tells if OMAP pm framework is done it's initialization
+ *
+ * In few cases, to sequence operations properly, we'd like to know if OMAP's PM
+ * framework has completed all it's expected initializations.
+ */
+static inline bool omap_pm_is_ready(void)
+{
+	return omap_pm_is_ready_status;
+}
+#else
+static inline bool omap_pm_is_ready(void)
+{
+	return false;
+}
+#endif
 #endif

@@ -283,8 +283,8 @@ static struct omap_dss_device sdp4430_otter1_device = {
 	.driver_name		= "otter1_panel_drv",
 	.type			= OMAP_DISPLAY_TYPE_DPI,
 	.phy.dpi.data_lines	= 24,
-	//.platform_enable	= sdp4430_panel_enable_otter1,
-	//.platform_disable	= sdp4430_panel_disable_otter1,
+	// .platform_enable	= sdp4430_panel_enable_otter1,
+	// .platform_disable	= sdp4430_panel_disable_otter1,
 	.channel		= OMAP_DSS_CHANNEL_LCD2,
         .panel          = {
         	.width_in_um = 10240000, //.width_in_um = 158,
@@ -315,7 +315,7 @@ static struct platform_device *sdp4430_devices[] __initdata = {
 #if defined(CONFIG_SENSORS_PMIC_THERMAL)
 	&sdp4430_pmic_thermal_sensor,
 #endif
-  &kc1_led_device,
+	&kc1_led_device,
 };
 
 static void __init omap_4430sdp_init_irq(void)
@@ -1257,11 +1257,9 @@ static void __init omap_4430sdp_init(void)
 	omap_init_emif_timings();
 
 	enable_rtc_gpio();
-	// omap4_audio_conf();
 	ramconsole_init();
 	omap4_i2c_init();
 	omap4_display_init();
-	// omap_disp_led_init();
 	platform_add_devices(sdp4430_devices, ARRAY_SIZE(sdp4430_devices));
 
 	gpio_request(0,"sysok");
@@ -1290,7 +1288,7 @@ static void __init omap_4430sdp_init(void)
 	}
 
 #ifdef CONFIG_ION
-	/* FIXME-HASH: ADDED FROM 4AI.4 */
+	/* FIXME-HASH: "omap4_register_ion()" [ADDED FROM 4AI.4] */
 	omap4_register_ion();
 #endif
 #ifdef CONFIG_TIWLAN_SDIO

@@ -665,7 +665,7 @@ static int __init omap_init_devices(void)
 	 */
 	omap_init_aess();
 	omap_init_dmic();
-	/* FIXME-HASH: REMOVED FOR 4AI.4 MERGE */
+	/* FIXME-HASH: "omap_init_dsp()" [REMOVED FOR 4AI.4 MERGE] */
 	//omap_init_dsp();
 	omap_init_kp();
 	omap_init_rng();

@@ -1115,6 +1115,7 @@ err2:
 		list_del(&pwrst->node);
 		kfree(pwrst);
 	}
+	omap_pm_is_ready_status = true;
 	return ret;
 }
 

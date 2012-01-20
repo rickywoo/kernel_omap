@@ -96,15 +96,14 @@ enum omap_color_mode {
 	OMAP_DSS_COLOR_RGBX16		= 1 << 16, /* RGBx16 - 4444 */
 	OMAP_DSS_COLOR_ARGB16_1555	= 1 << 17, /* ARGB16 - 1555 */
 	OMAP_DSS_COLOR_XRGB16_1555	= 1 << 18, /* xRGB16 - 1555 */
-};
 #if 0
-/* FIXME-HASH */
 	OMAP_DSS_COLOR_RGBA12		= 1 << 15, /* RGBA12 - 4444 */
 	OMAP_DSS_COLOR_XRGB12		= 1 << 16, /* xRGB12, 16-bit cont. */
 	OMAP_DSS_COLOR_ARGB16_1555	= 1 << 17, /* ARGB16-1555 */
 	OMAP_DSS_COLOR_RGBX24_32_ALGN   = 1 << 18, /* 32-msb aligned 24bit */
+#endif
 	OMAP_DSS_COLOR_XRGB15		= 1 << 19, /* xRGB15: 1555*/
-
+#if 0
 	OMAP_DSS_COLOR_GFX_OMAP2 =
 		OMAP_DSS_COLOR_CLUT1 | OMAP_DSS_COLOR_CLUT2 |
 		OMAP_DSS_COLOR_CLUT4 | OMAP_DSS_COLOR_CLUT8 |
@@ -146,6 +145,7 @@ enum omap_color_mode {
 
 	OMAP_DSS_COLOR_VID3_OMAP3 = OMAP_DSS_COLOR_VID2_OMAP3,
 #endif
+};
 
 enum omap_lcd_display_type {
 	OMAP_DSS_LCD_DISPLAY_STN,
