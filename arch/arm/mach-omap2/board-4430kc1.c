@@ -36,6 +36,7 @@
 #include <mach/omap4-common.h>
 #include <mach/emif.h>
 #include <mach/lpddr2-elpida.h>
+#include <mach/dmm.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
@@ -57,6 +58,7 @@
 #include <plat/opp_twl_tps.h>
 #include <plat/mmc.h>
 #include <plat/remoteproc.h>
+#include <plat/vram.h>
 
 #include <plat/hwspinlock.h>
 #include <plat/dmtimer.h>
@@ -68,6 +70,7 @@
 
 #include <linux/skbuff.h>
 #include <linux/ti_wilink_st.h>
+#include <linux/omapfb.h>
 
 #define OMAP4_LCD_EN_GPIO		28
 
@@ -271,67 +274,43 @@ static struct omap_pwm_led_platform_data kc1_led_data = {
 };
 
 static struct platform_device kc1_led_device = {
-    .name       = "omap_pwm_led",
-    .id     = -1,
-    .dev        = {
+    .name	= "omap_pwm_led",
+    .id		= -1,
+    .dev	= {
         .platform_data = &kc1_led_data,
     },
 };
 
-#if 0
 static int sdp4430_panel_enable_otter1(struct omap_dss_device *dssdev)
 {
 #if 0
-	gpio_request(DLP_4430_GPIO_59, "DLP DISPLAY SEL");
-	gpio_direction_output(DLP_4430_GPIO_59, 0);
-	gpio_request(DLP_4430_GPIO_45, "DLP PARK");
-	gpio_direction_output(DLP_4430_GPIO_45, 0);
-	gpio_request(DLP_4430_GPIO_40, "DLP PHY RESET");
-	gpio_direction_output(DLP_4430_GPIO_40, 0);
-	mdelay(100);
-
-	gpio_set_value(DLP_4430_GPIO_45, 1);
-	gpio_set_value(DLP_4430_GPIO_40, 1);
-	mdelay(300);
-
-	gpio_request(101, "OTTER1 LCD PWR EN");
-	gpio_direction_output(101, 1);
-	gpio_request(102, "OTTER1 BL PWR EN");
-	gpio_direction_output(102, 1);
-	gpio_request(103, "OTTER1 CABC0");
-	gpio_direction_output(103, 0);
-	gpio_request(104, "OTTER1 CABC1");
-	gpio_direction_output(104, 0);
-#else
 	gpio_request(37, "OMAP_RGB_SHTDN");
 	gpio_direction_output(37, 1);
 	gpio_set_value(37, 1);
 #endif
-
 	return 0;
 }
-
-
 
 static void sdp4430_panel_disable_otter1(struct omap_dss_device *dssdev)
 
 {
+#if 0
 	gpio_set_value(DLP_4430_GPIO_40, 0);
 	gpio_set_value(DLP_4430_GPIO_45, 0);
-}
 #endif
+}
 
 static struct omap_dss_device sdp4430_otter1_device = {
 	.name			= "lcd2",
 	.driver_name		= "otter1_panel_drv",
 	.type			= OMAP_DISPLAY_TYPE_DPI,
 	.phy.dpi.data_lines	= 24,
-	// .platform_enable	= sdp4430_panel_enable_otter1,
-	// .platform_disable	= sdp4430_panel_disable_otter1,
+	//.platform_enable	= sdp4430_panel_enable_otter1,
+	//.platform_disable	= sdp4430_panel_disable_otter1,
 	.channel		= OMAP_DSS_CHANNEL_LCD2,
         .panel          = {
-        	.width_in_um = 10240000, //.width_in_um = 158,
-	        .height_in_um = 6000000, // .height_in_um = 92,
+        	.width_in_um = 158000, //.width_in_um = 158,
+	        .height_in_um = 92000, // .height_in_um = 92,
         },
 };
 
@@ -346,7 +325,17 @@ static struct omap_dss_board_info sdp4430_dss_data = {
 	.default_device	=	&sdp4430_otter1_device,
 };
 
-
+#define TABLET_FB_RAM_SIZE                SZ_16M /* 1920×1080*4 * 2 */
+static struct omapfb_platform_data tablet_fb_pdata = {
+	.mem_desc = {
+		.region_cnt = 1,
+		.region = {
+			[0] = {
+				.size = TABLET_FB_RAM_SIZE,
+			},
+		},
+	},
+};
 
 static struct platform_device *sdp4430_devices[] __initdata = {
 	&sdp4430_disp_led,
@@ -1302,8 +1291,15 @@ static void __init omap_4430sdp_init(void)
 	enable_rtc_gpio();
 	ramconsole_init();
 	omap4_i2c_init();
+#ifdef CONFIG_TI_TILER
+	omap_dmm_init();
+#endif
 	omap4_display_init();
 	platform_add_devices(sdp4430_devices, ARRAY_SIZE(sdp4430_devices));
+#ifdef CONFIG_ION
+	/* FIXME-HASH: "omap4_register_ion()" [ADDED FROM 4AI.4] */
+	omap4_register_ion();
+#endif
 
 	gpio_request(0,"sysok");
 
@@ -1330,10 +1326,6 @@ static void __init omap_4430sdp_init(void)
 		gpio_direction_output(155, 1);
 	}
 
-#ifdef CONFIG_ION
-	/* FIXME-HASH: "omap4_register_ion()" [ADDED FROM 4AI.4] */
-	omap4_register_ion();
-#endif
 #ifdef CONFIG_TIWLAN_SDIO
 	config_wlan_mux();
 #else
@@ -1344,6 +1336,9 @@ static void __init omap_4430sdp_init(void)
 	usb_musb_init(&musb_board_data);
 
 	spi_register_board_info(sdp4430_spi_board_info,	ARRAY_SIZE(sdp4430_spi_board_info));
+
+	omap_vram_set_sdram_vram(TABLET_FB_RAM_SIZE, 0);
+	omapfb_set_platform_data(&tablet_fb_pdata);
 
 	omap_display_init(&sdp4430_dss_data);
 	enable_board_wakeup_source();
