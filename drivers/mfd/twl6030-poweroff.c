@@ -35,13 +35,13 @@
 void twl6030_reboot(char str, const char *cmd)
 {
 	u8 uninitialized_var(val);
-	int err, i;
+	int err; //, i;
 //This is a work around to solve the OTA factory reset issue
 omap_writel(0x29b18c80 , 0x4a307B94);//VCORE 0x29
 omap_writel(0x37b78c80 , 0x4a307B98);//VMPU  0x37
 omap_writel(0x1ba98c80 , 0x4a307B9C);//VIVA  0x1b
         
-	pr_warning("Device is rebooting thanks to Phonix... \n", i);
+	pr_warning("Device is rebooting thanks to Phonix... \n");
 
 	val = SW_RESET_DEVOFF;
 

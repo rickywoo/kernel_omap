@@ -223,7 +223,7 @@ ram_console_save_old(struct ram_console_buffer *buffer, char *dest)
 
 static void append_uboot_log(void){
 	unsigned char *log_buf = NULL;
-	unsigned long *log_size;
+	volatile unsigned long *log_size;
 	log_size = (volatile unsigned long *)ioremap(0x9CAB0000-0x8,4);
 	log_buf = (unsigned char *)ioremap(0x9CAB0000-0x1000,0x998);
 	ram_console_write(NULL,log_buf,*log_size);

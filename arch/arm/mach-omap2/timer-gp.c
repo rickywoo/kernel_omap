@@ -127,7 +127,7 @@ static struct clock_event_device clockevent_gpt = {
  * Meant to be called from board-*.c files in the event that GPTIMER1, the
  * default, is unsuitable.  Returns -EINVAL on error or 0 on success.
  */
-int __init omap2_gp_clockevent_set_gptimer(u8 id)
+int omap2_gp_clockevent_set_gptimer(u8 id)
 {
 	if (id < 1 || id > MAX_GPTIMER_ID)
 		return -EINVAL;

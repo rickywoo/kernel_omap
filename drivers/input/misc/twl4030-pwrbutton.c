@@ -142,12 +142,12 @@ static void pwrbutton_work_func(struct work_struct *work)
 
 	wake_unlock(&pwrbutton_wakelock);
 }
-static int twl4030_pwrbutton_suspend(struct platform_device *pdev)
+static int twl4030_pwrbutton_suspend(struct platform_device *pdev, pm_message_t mesg)
 {
-	int err;
-	u8 value;
-	int press;
-	struct input_dev *pwr = platform_get_drvdata(pdev);
+	//int err;
+	//u8 value;
+	//int press;
+	//struct input_dev *pwr = platform_get_drvdata(pdev);
 	g_in_suspend=1;
     	return 0;
 }
@@ -237,8 +237,8 @@ static int __devexit twl4030_pwrbutton_remove(struct platform_device *pdev)
 struct platform_driver twl4030_pwrbutton_driver = {
 	.probe		= twl4030_pwrbutton_probe,
 	.remove		= __devexit_p(twl4030_pwrbutton_remove),
-	.suspend	=	twl4030_pwrbutton_suspend,
-	.resume		=	twl4030_pwrbutton_resume,
+	.suspend	= twl4030_pwrbutton_suspend,
+	.resume		= twl4030_pwrbutton_resume,
 	.driver		= {
 		.name	= "twl4030_pwrbutton",
 		.owner	= THIS_MODULE,

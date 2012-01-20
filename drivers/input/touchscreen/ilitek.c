@@ -462,7 +462,7 @@ return
 */
 static void ilitek_set_input_param(struct input_dev *input, int max_tp, int max_x, int max_y)
 {
-	int key;
+	// int key;
 	//input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
 	//input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
 	__set_bit(EV_SYN, input->evbit);
@@ -567,7 +567,8 @@ return
 int touch_down = 0;
 static int ilitek_i2c_process_and_report(void)
 {
-	int i, len, ret, org_x, org_y, x, y, key;
+	int ii, len, ret, org_x, org_y, x, y; //, key;
+	int xi;
 	struct input_dev *input = i2c.input_dev;
 	unsigned char buf[9]={0};
 
@@ -583,13 +584,13 @@ static int ilitek_i2c_process_and_report(void)
 		len = buf[0];
 
 		// read touch point
-		for(i=0; i<len; i++){
+		for(ii=0; ii<len; ii++){
 			// parse point
 			if(ilitek_i2c_read(i2c.client, ILITEK_TP_CMD_READ_SUB_DATA, buf, 5)){
 				org_x = (((int)buf[1]) << 8) + buf[2];
 				org_y = (((int)buf[3]) << 8) + buf[4];
-                x = i2c.max_y - org_y;
-                y = org_x;
+				x = i2c.max_y - org_y;
+				y = org_x;
 
 				// no touch
 				if((buf[0] & 0x80) == 0 && buf[0]!=0x01){
@@ -623,38 +624,39 @@ static int ilitek_i2c_process_and_report(void)
 		unsigned char tp_id, key_id;
 		tp_id = buf[0];
 		key_id = buf[1] - 1;
-		int i = 0;
+		/* FIXME-HASH: Changed "int i" -> "int xi" [ISO C90 mixed declaration] */
+		xi = 0;
 
 		if(tp_id & 0x01)
 		{
-			i = 0;
-			org_x = (int)buf[1 + (i * 4)] + ((int)buf[2 + (i * 4)] * 256);
-			org_y = (int)buf[3 + (i * 4)] + ((int)buf[4 + (i * 4)] * 256);
+			xi = 0;
+			org_x = (int)buf[1 + (xi * 4)] + ((int)buf[2 + (xi * 4)] * 256);
+			org_y = (int)buf[3 + (xi * 4)] + ((int)buf[4 + (xi * 4)] * 256);
 
 			x = (i2c.max_y - org_y);
-         	y = org_x;
+			y = org_x;
 
-            //Workaround for wiping from right to left when device is rotated
-            if (x == 0)
-                x++;
-            if (y == 0)
-                y++;
+			//Workaround for wiping from right to left when device is rotated
+			if (x == 0)
+				x++;
+			if (y == 0)
+				y++;
 
 			if(!touch_down){
 				input_report_key(i2c.input_dev, BTN_TOUCH, 1);
 				touch_down = 1; 
 			}
 
-			input_event(i2c.input_dev, EV_ABS, ABS_MT_TRACKING_ID, i);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_TRACKING_ID, xi);
 #if ROTATION_270
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_X, y);
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, i2c.max_y - x);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_X, y);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, i2c.max_y - x);
 #else
 			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_X, x);
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, y);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, y);
 #endif
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_TOUCH_MAJOR, FAKE_TOUCH_MAJOR_VALUE);
-            input_mt_sync(i2c.input_dev);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_TOUCH_MAJOR, FAKE_TOUCH_MAJOR_VALUE);
+			input_mt_sync(i2c.input_dev);
 
 			
 			
@@ -663,30 +665,30 @@ static int ilitek_i2c_process_and_report(void)
 
 		if(tp_id & 0x02)
 		{
-			i = 1;
-        	org_x = (int)buf[1 + (i * 4)] + ((int)buf[2 + (i * 4)] * 256);
-        	org_y = (int)buf[3 + (i * 4)] + ((int)buf[4 + (i * 4)] * 256);
+			xi = 1;
+			org_x = (int)buf[1 + (xi * 4)] + ((int)buf[2 + (xi * 4)] * 256);
+			org_y = (int)buf[3 + (xi * 4)] + ((int)buf[4 + (xi * 4)] * 256);
 
 			x = (i2c.max_y - org_y);
-         	y = org_x;
+			y = org_x;
 
 			if(!touch_down){
 				input_report_key(i2c.input_dev, BTN_TOUCH, 1);
 				touch_down = 1; 
 			}
 
-			input_event(i2c.input_dev, EV_ABS, ABS_MT_TRACKING_ID, i);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_TRACKING_ID, xi);
 #if ROTATION_270
 			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_X, y);
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, i2c.max_y - x);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, i2c.max_y - x);
 #else
 			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_X, x);
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, y);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, y);
 #endif
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_X, x);
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, y);
-            input_event(i2c.input_dev, EV_ABS, ABS_MT_TOUCH_MAJOR, FAKE_TOUCH_MAJOR_VALUE);
-            input_mt_sync(i2c.input_dev);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_X, x);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_POSITION_Y, y);
+			input_event(i2c.input_dev, EV_ABS, ABS_MT_TOUCH_MAJOR, FAKE_TOUCH_MAJOR_VALUE);
+			input_mt_sync(i2c.input_dev);
 			
 			//printk( "@@@@@@@@@  buf[%x]=(%x) point 2= %d, %d\n",i, buf[i]&0x3F, x, y);
 		}
@@ -697,7 +699,7 @@ static int ilitek_i2c_process_and_report(void)
 		if(buf[0] == 0){
 			touch_key_hold_press = 0;
 			input_event(i2c.input_dev, EV_ABS, ABS_MT_TOUCH_MAJOR, 0);
-            input_mt_sync(i2c.input_dev);
+			input_mt_sync(i2c.input_dev);
 
 			if(touch_down){
 				input_report_key(i2c.input_dev, BTN_TOUCH, 0);
@@ -705,8 +707,8 @@ static int ilitek_i2c_process_and_report(void)
 			}
 			
 			//printk(ILITEK_DEBUG_LEVEL "%s, finger up point[%d]= %d, %d\n", __func__, buf[0]&0x3F, x, y);
-            //Workaround to clear TP buffer
-            //ilitek_i2c_read(i2c.client, ILITEK_TP_CMD_READ_DATA, buf, 9);
+			//Workaround to clear TP buffer
+			//ilitek_i2c_read(i2c.client, ILITEK_TP_CMD_READ_DATA, buf, 9);
 		}
 
 		input_sync(i2c.input_dev);

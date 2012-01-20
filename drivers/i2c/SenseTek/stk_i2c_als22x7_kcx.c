@@ -56,16 +56,16 @@
 #define STK_LOCK0 mutex_unlock(&stkals_io_lock)
 #define STK_LOCK1 mutex_lock(&stkals_io_lock)
 #ifdef CONFIG_HAS_EARLYSUSPEND
-static void stk_early_suspend(struct early_suspend *h);
-static void stk_late_resume(struct early_suspend *h);
+//static void stk_early_suspend(struct early_suspend *h);
+//static void stk_late_resume(struct early_suspend *h);
 #endif
 
-static uint32_t init_all_setting(void);
+//static uint32_t init_all_setting(void);
 static int32_t get_lux(void);
-static int32_t set_it(uint32_t it);
-static int32_t set_gain(uint32_t gain);
+//static int32_t set_it(uint32_t it);
+//static int32_t set_gain(uint32_t gain);
 static int32_t enable_als(int enable);
-static uint32_t get_enable(void);
+// static uint32_t get_enable(void);
 
 
 static int polling_function(void* arg);
@@ -78,11 +78,12 @@ static struct stkals22x7_data* pStkAlsData = NULL;
 
 
 static int32_t als_transmittance = CONFIG_STK_ALS_TRANSMITTANCE;
-static uint32_t isStk22x7;
+// static uint32_t isStk22x7;
 
 static atomic_t pause_polling = ATOMIC_INIT(0);
 
 //////////////////////
+#if 0
 static uint32_t init_all_setting(void)
 {
 	int err;
@@ -92,7 +93,6 @@ static uint32_t init_all_setting(void)
 	printk("i2c write status when init_all_setting: %d\n", err);
 	return true;
 }
-
 static int32_t set_it(uint32_t it)
 {
 	pStkAlsData->it = it;
@@ -107,6 +107,7 @@ static int32_t set_gain(uint32_t gain)
 	pStkAlsData->reg1 |= STK_ALS_CMD1_GAIN(gain);
 	return stk_writeb(pStkAlsData->client1,pStkAlsData->reg1);
 }
+#endif
 
 static int32_t stkals_set_power_state(unsigned int shutdown)
 {
@@ -202,10 +203,14 @@ static int32_t enable_als(int enable)
 	return ret;
 }
 
+/* FIXME-HASH: "get_enable" [REMOVED - NOT USED] */
+#if 0
 static uint32_t get_enable(void)
 {
 	return (pStkAlsData->power_down_state)?0:1;
 }
+#endif
+
 inline int32_t alscode2lux(uint32_t alscode)
 {
     alscode = (alscode<<9) + (alscode<<6);
@@ -239,7 +244,8 @@ static int32_t get_lux()
 
 }
 
-// For Debug
+/* FIXME-HASH: "help_show" [REMOVED - NOT USED] */
+#if 0
 static ssize_t help_show(struct kobject * kobj, struct kobj_attribute * attr, char * buf)
 {
      return sprintf(buf, "Usage : cat xxxx\nor echo val > xxxx\
@@ -247,7 +253,9 @@ static ssize_t help_show(struct kobject * kobj, struct kobj_attribute * attr, ch
      \nals_enable : RW (0~1)\nals_transmittance : RW (1~10000)\n");
 
 }
+#endif
 
+#if 0
 static ssize_t lux_range_show(struct kobject * kobj, struct kobj_attribute * attr, char * buf)
 {
     return sprintf(buf, "%d\n", alscode2lux((1<<16) -1));//full code
@@ -258,20 +266,27 @@ static ssize_t lux_res_show(struct kobject * kobj, struct kobj_attribute * attr,
 {
     return sprintf(buf, "1\n");
 }
+#endif
 
+/* FIXME-HASH: "driver_version_show" [REMOVED - NOT USED] */
+#if 0
 static ssize_t driver_version_show(struct kobject * kobj, struct kobj_attribute * attr, char * buf)
 {
     return sprintf(buf,"%s\n",STK_DRIVER_VER);
 }
+#endif
 
+/* FIXME-HASH: "sensor_real_name_show" [REMOVED - NOT USED] */
+#if 0
 static ssize_t sensor_real_name_show(struct kobject * kobj, struct kobj_attribute * attr, char * buf)
 {
 	if (isStk22x7)
 		return sprintf(buf,"%s\n","STK2207");
 	return sprintf(buf,"%s\n","CM3263");
 }
+#endif
 
-
+#if 0
 static ssize_t als_enable_show(struct kobject * kobj, struct kobj_attribute * attr, char * buf)
 {
     int32_t enable;
@@ -321,7 +336,7 @@ static ssize_t lux_store(struct kobject *kobj,
     STK_LOCK(0);
     return len;
 }
-
+#endif
 
 
 #define __DEBUG_SYSFS_BIN 1
@@ -458,18 +473,18 @@ static struct kobj_attribute help_attribute = (struct kobj_attribute)__ATTR_RO(h
 static struct kobj_attribute driver_version_attribute = (struct kobj_attribute)__ATTR_RO(driver_version);
 static struct kobj_attribute sensor_real_name_attribute = (struct kobj_attribute)__ATTR_RO(sensor_real_name);
 #endif //CONFIG_STK_SYSFS_DBG
-static struct kobj_attribute lux_range_attribute = (struct kobj_attribute)__ATTR_RO(lux_range);
-static struct kobj_attribute lux_attribute = (struct kobj_attribute)__ATTR(lux,0666,lux_show,lux_store);
-static struct kobj_attribute als_lux_res_attribute = (struct kobj_attribute)__ATTR_RO(lux_res);
-static struct kobj_attribute als_enable_attribute = (struct kobj_attribute)__ATTR(als_enable,0666,als_enable_show,als_enable_store);
+//static struct kobj_attribute lux_range_attribute = (struct kobj_attribute)__ATTR_RO(lux_range);
+//static struct kobj_attribute lux_attribute = (struct kobj_attribute)__ATTR(lux,0666,lux_show,lux_store);
+//static struct kobj_attribute als_lux_res_attribute = (struct kobj_attribute)__ATTR_RO(lux_res);
+//static struct kobj_attribute als_enable_attribute = (struct kobj_attribute)__ATTR(als_enable,0666,als_enable_show,als_enable_store);
 
-static struct bin_attribute als_lux_range_bin_attribute = __ATTR_BIN_RO(lux_range_bin,als_lux_range_read,sizeof(uint32_t));
-static struct bin_attribute als_lux_bin_attribute = __ATTR_BIN_RO(lux_bin,lux_bin_read,sizeof(uint32_t));
-static struct bin_attribute als_lux_res_bin_attribute = __ATTR_BIN_RO(lux_resolution_bin,als_lux_resolution_read,sizeof(uint32_t));
-static struct bin_attribute als_enable_bin_attribute = __ATTR_BIN_RW(als_enable_bin,als_enable_read,als_enable_write,sizeof(uint8_t));
+//static struct bin_attribute als_lux_range_bin_attribute = __ATTR_BIN_RO(lux_range_bin,als_lux_range_read,sizeof(uint32_t));
+//static struct bin_attribute als_lux_bin_attribute = __ATTR_BIN_RO(lux_bin,lux_bin_read,sizeof(uint32_t));
+//static struct bin_attribute als_lux_res_bin_attribute = __ATTR_BIN_RO(lux_resolution_bin,als_lux_resolution_read,sizeof(uint32_t));
+//static struct bin_attribute als_enable_bin_attribute = __ATTR_BIN_RW(als_enable_bin,als_enable_read,als_enable_write,sizeof(uint8_t));
 /* <---DEPRECATED */
-static struct bin_attribute als_delay_bin_attribute = __ATTR_BIN_RW(als_delay_bin,als_delay_read,als_delay_write,sizeof(uint32_t));
-static struct bin_attribute als_min_delay_bin_attribute = __ATTR_BIN_RO(als_min_delay_bin,als_min_delay_read,sizeof(uint32_t));
+//static struct bin_attribute als_delay_bin_attribute = __ATTR_BIN_RW(als_delay_bin,als_delay_read,als_delay_write,sizeof(uint32_t));
+//static struct bin_attribute als_min_delay_bin_attribute = __ATTR_BIN_RO(als_min_delay_bin,als_min_delay_read,sizeof(uint32_t));
 /* DEPRECATED---> */
 
 #ifdef CONFIG_STK_SYSFS_DBG
@@ -503,6 +518,8 @@ static struct kobj_attribute als_transmittance_attribute = (struct kobj_attribut
 #endif //CONFIG_STK_SYSFS_DBG
 
 
+/* FIXME-HASH: "sensetek_optical_sensors_attrs []" [REMOVED - NOT USED] */
+#if 0
 static struct attribute* sensetek_optical_sensors_attrs [] =
 {
     &lux_range_attribute.attr,
@@ -511,6 +528,8 @@ static struct attribute* sensetek_optical_sensors_attrs [] =
     &als_lux_res_attribute.attr,
     NULL,
 };
+#endif
+
 #ifdef CONFIG_STK_SYSFS_DBG
 // For Debug
 static struct attribute* sensetek_optical_sensors_dbg_attrs [] =
@@ -537,6 +556,8 @@ static struct attribute_group sensetek_optics_sensors_attrs_group =
 #endif //CONFIG_STK_SYSFS_DBG
 
 
+/* FIXME-HASH: "sensetek_optical_sensors_bin_attrs[]" [REMOVED - NOT USED] */
+#if 0
 static struct bin_attribute* sensetek_optical_sensors_bin_attrs[] =
 {
     &als_lux_range_bin_attribute,
@@ -547,11 +568,13 @@ static struct bin_attribute* sensetek_optical_sensors_bin_attrs[] =
     &als_min_delay_bin_attribute,
     NULL,
 };
+#endif
+
+//static struct platform_device *stk_oss_dev = NULL; /* Device structure */
 
 
-static struct platform_device *stk_oss_dev = NULL; /* Device structure */
-
-
+/* FIXME-HASH: "stk_sysfs_create_files" [REMOVED - NOT USED] */
+#if 0
 static int stk_sysfs_create_files(struct kobject *kobj,struct attribute** attrs)
 {
      int err;
@@ -564,7 +587,10 @@ static int stk_sysfs_create_files(struct kobject *kobj,struct attribute** attrs)
     }
     return 0;
 }
+#endif
 
+/* FIXME-HASH: "stk_sysfs_create_bin_files" [REMOVED - NOT USED] */
+#if 0
 static int stk_sysfs_create_bin_files(struct kobject *kobj,struct bin_attribute** bin_attrs)
 {
     int err;
@@ -577,6 +603,8 @@ static int stk_sysfs_create_bin_files(struct kobject *kobj,struct bin_attribute*
     }
     return 0;
 }
+#endif
+
 /* DEPRECATED
 static void stk_sysfs_remove_files(struct kobject *kobj,struct attribute** attrs)
 {
@@ -596,14 +624,17 @@ static void stk_sysfs_remove_bin_files(struct kobject *kobj,struct bin_attribute
 }*/
 
 struct i2c_client *g_client;
-static struct i2c_driver stk_als_driver;
-static char bLight_Sensor_Exist = 0;
+/* FIXME-HASH "static struct i2c_driver stk_als_driver" [REMOVED - NOT USED] */
+// static struct i2c_driver stk_als_driver;
+// static char bLight_Sensor_Exist = 0;
 /*
  * Called when a stk als device is matched with this driver
  */
 int Light_Sensor_Exist;
 
 EXPORT_SYMBOL(Light_Sensor_Exist);
+
+#if 0
 static int stk_als_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
@@ -732,12 +763,15 @@ static int stk_als_remove(struct i2c_client *client)
 	}
 	return 0;
 }
+#endif
+
 
 //////////////////////////leon add//////////////////////////////
 #ifdef CONFIG_HAS_EARLYSUSPEND
+#if 0
 static void stk_early_suspend(struct early_suspend *h)
 {
-	int err = 0;
+	// int err = 0;
 	struct stkals22x7_data*  data;
 	printk("!!!!!!!%s!!!!!!!!!!\n",__func__);
 	data = container_of(h, struct stkals22x7_data, early_suspend);	
@@ -747,7 +781,7 @@ static void stk_early_suspend(struct early_suspend *h)
 
 static void stk_late_resume(struct early_suspend *h)
 {
-	int err = 0;
+	// int err = 0;
 	struct stkals22x7_data*  data;
 	printk("!!!!!!!%s!!!!!!!!!!\n",__func__);
 	data = container_of(h, struct stkals22x7_data, early_suspend);
@@ -756,6 +790,7 @@ static void stk_late_resume(struct early_suspend *h)
 
 	init_all_setting();
 }
+#endif
 #endif
 ////////////////////////////////////////////////////////////////
 
@@ -769,8 +804,8 @@ static const struct i2c_device_id stk_als_id[] = {
 MODULE_DEVICE_TABLE(i2c, stk_als_id);
 
 #ifdef CONFIG_PM
-
-static int stk_als_suspend(struct i2c_client *client){
+#if 0
+static int stk_als_suspend(struct i2c_client *client, pm_message_t mesg) {
 	printk("!!!!!!!%s!!!!!!!!!!\n",__func__);
 	return 0;
 }
@@ -779,17 +814,21 @@ static int stk_als_resume(struct i2c_client *client){
 	printk("!!!!!!!%s!!!!!!!!!!\n",__func__);
 	return 0;
 }
+#endif
 #else
 #define stk_als_suspend NULL
 #define stk_als_resume NULL
 #endif
-
+#if 0
 static void stk_als_shutdown(struct i2c_client *client)
 {
         printk(KERN_DEBUG "%s\n", __func__);
         atomic_set(&pause_polling, 1);
 }
+#endif
 
+/* FIXME-HASH: "static struct i2c_driver stk_als_driver = {" [REMOVED - NOT USED] */
+#if 0
 static struct i2c_driver stk_als_driver = {
 	.driver = {
 		.name = STKALS_DRV_NAME,
@@ -801,6 +840,7 @@ static struct i2c_driver stk_als_driver = {
 	.resume = stk_als_resume,
 	.shutdown = stk_als_shutdown,
 };
+#endif
 
 static int __init stk_i2c_als22x7_init(void)
 {

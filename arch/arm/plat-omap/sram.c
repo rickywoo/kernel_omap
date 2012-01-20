@@ -453,7 +453,7 @@ static inline int omap44xx_sram_init(void)
 }
 #endif
 
-int __init omap_sram_init(void)
+int omap_sram_init(void)
 {
 	omap_detect_sram();
 	omap_map_sram();

@@ -513,7 +513,7 @@ enum hdmi_power_state {
 };
 
 /* HDMI device states */
-#include <plat/display.h>
+#include <video/omapdss.h>
 enum hdmi_dev_state {
 	HDMI_DISABLED  = OMAP_DSS_DISPLAY_DISABLED,
 	HDMI_ACTIVE    = OMAP_DSS_DISPLAY_ACTIVE,

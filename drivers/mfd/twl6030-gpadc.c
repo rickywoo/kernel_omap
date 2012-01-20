@@ -366,7 +366,7 @@ int twl_get_batntc()
 	int adcraw = 0;
 	int temp = 0;
 	int ret;
-	int status;
+	// int status;
 	char i;
 	struct twl6030_gpadc_request req;
 

@@ -97,13 +97,13 @@ static int twl6030_irq_thread(void *data)
 	static unsigned i2c_errors;
 	static const unsigned max_i2c_errors = 100;
 	int ret;
-	u8 usb_charge_sts = 0, usb_charge_sts1 = 0, usb_charge_sts2 = 0;
+	//u8 usb_charge_sts = 0, usb_charge_sts1 = 0, usb_charge_sts2 = 0;
 
 	current->flags |= PF_NOFREEZE;
 
 	while (!kthread_should_stop()) {
 		int i;
-		int start_time = 0;
+		//int start_time = 0;
 		union {
 		u8 bytes[4];
 		u32 int_sts;

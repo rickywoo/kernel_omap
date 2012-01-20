@@ -2177,13 +2177,14 @@ static int bma250_probe(struct i2c_client *client,
 	int err = 0;
 	int tempvalue;
 	struct bma250_data *data;
+	struct input_dev *dev;
+
 	data = kzalloc(sizeof(struct bma250_data), GFP_KERNEL);
 	if (!data) {
 		err = -ENOMEM;
 		goto exit;
 	}
 
-	struct input_dev *dev;
     /*For g sensor*/
     data->vdd_regulator = regulator_get(NULL, "g-sensor-pwr");
     if (IS_ERR(data->vdd_regulator)) {
@@ -2325,6 +2326,7 @@ exit:
 	return err;
 }
 
+#if 0
 static int bma250_suspend(struct i2c_client *client, pm_message_t mesg)
 {
 printk("!!!!!!!!!!!%s!!!!!!!!!\n",__func__);
@@ -2346,7 +2348,7 @@ if (err) printk("%s: regulator_disable fail!\n",__func__);
         bma250_set_mode(client, BMA250_MODE_NORMAL);
 	return 0;
 }
-
+#endif
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
 static void bma250_early_suspend(struct early_suspend *h)

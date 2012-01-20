@@ -552,11 +552,14 @@ static void create_twl_proc_file(void)
 		printk(KERN_ERR "%sproc file create failed!\n",__func__);
 }
 
+/* FIXME-HASH: "remove_twl_proc_file" [REMOVED - NOT USED] */
+#if 0
 static void remove_twl_proc_file(void)
 {
 	printk(KERN_INFO "%s\n",__func__);
 	remove_proc_entry(SKELETON_PROC_FILE, NULL);
 }
+#endif
 #endif
 /*----------------------------------------------------------------------*/
 

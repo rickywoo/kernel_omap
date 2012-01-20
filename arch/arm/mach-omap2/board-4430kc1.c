@@ -45,7 +45,7 @@
 #include <plat/common.h>
 #include <plat/control.h>
 #include <plat/timer-gp.h>
-#include <plat/display.h>
+#include <video/omapdss.h>
 #include <plat/usb.h>
 #include <plat/omap_device.h>
 #include <plat/omap_hwmod.h>
@@ -197,8 +197,8 @@ static void __init sdp4430_init_display_led(void)
 	twl_i2c_write_u8(TWL_MODULE_PWM, 0xFF, LED_PWM2ON);
 	twl_i2c_write_u8(TWL_MODULE_PWM, 0x7F, LED_PWM2OFF);
 	//twl_i2c_write_u8(TWL6030_MODULE_ID1, 0x30, TWL6030_TOGGLE3);
-    twl_i2c_write_u8(TWL6030_MODULE_ID1, 0x08, TWL6030_TOGGLE3);
-    twl_i2c_write_u8(TWL6030_MODULE_ID1, 0x38, TWL6030_TOGGLE3);
+	twl_i2c_write_u8(TWL6030_MODULE_ID1, 0x08, TWL6030_TOGGLE3);
+	twl_i2c_write_u8(TWL6030_MODULE_ID1, 0x38, TWL6030_TOGGLE3);
 }
 
 static void sdp4430_set_primary_brightness(u8 brightness)
@@ -277,6 +277,49 @@ static struct platform_device kc1_led_device = {
         .platform_data = &kc1_led_data,
     },
 };
+
+#if 0
+static int sdp4430_panel_enable_otter1(struct omap_dss_device *dssdev)
+{
+#if 0
+	gpio_request(DLP_4430_GPIO_59, "DLP DISPLAY SEL");
+	gpio_direction_output(DLP_4430_GPIO_59, 0);
+	gpio_request(DLP_4430_GPIO_45, "DLP PARK");
+	gpio_direction_output(DLP_4430_GPIO_45, 0);
+	gpio_request(DLP_4430_GPIO_40, "DLP PHY RESET");
+	gpio_direction_output(DLP_4430_GPIO_40, 0);
+	mdelay(100);
+
+	gpio_set_value(DLP_4430_GPIO_45, 1);
+	gpio_set_value(DLP_4430_GPIO_40, 1);
+	mdelay(300);
+
+	gpio_request(101, "OTTER1 LCD PWR EN");
+	gpio_direction_output(101, 1);
+	gpio_request(102, "OTTER1 BL PWR EN");
+	gpio_direction_output(102, 1);
+	gpio_request(103, "OTTER1 CABC0");
+	gpio_direction_output(103, 0);
+	gpio_request(104, "OTTER1 CABC1");
+	gpio_direction_output(104, 0);
+#else
+	gpio_request(37, "OMAP_RGB_SHTDN");
+	gpio_direction_output(37, 1);
+	gpio_set_value(37, 1);
+#endif
+
+	return 0;
+}
+
+
+
+static void sdp4430_panel_disable_otter1(struct omap_dss_device *dssdev)
+
+{
+	gpio_set_value(DLP_4430_GPIO_40, 0);
+	gpio_set_value(DLP_4430_GPIO_45, 0);
+}
+#endif
 
 static struct omap_dss_device sdp4430_otter1_device = {
 	.name			= "lcd2",

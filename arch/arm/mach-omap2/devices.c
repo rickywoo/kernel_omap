@@ -30,7 +30,7 @@
 #include <plat/mux.h>
 #include <mach/gpio.h>
 #include <plat/mmc.h>
-#include <plat/display.h>
+#include <video/omapdss.h>
 #include <plat/dma.h>
 #include <plat/gpu.h>
 #include <plat/omap_device.h>

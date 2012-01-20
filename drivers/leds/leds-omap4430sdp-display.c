@@ -294,14 +294,12 @@ static int omap4430_sdp_display_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static int omap4430_sdp_display_suspend(struct platform_device *pdev)
+static int omap4430_sdp_display_suspend(struct platform_device *pdev, pm_message_t state)
 {
-    printk("!!!!!!!%s!!!!!!!!!!\n",__func__);
     struct display_led_data *info = platform_get_drvdata(pdev);
+    printk("!!!!!!!%s!!!!!!!!!!\n",__func__);
     omap4430_orange_led_set(&info->pri_display_class_dev,LED_OFF);
-	
-	
-	return 0;
+    return 0;
 }
 
 static int omap4430_sdp_display_resume(struct platform_device *pdev)

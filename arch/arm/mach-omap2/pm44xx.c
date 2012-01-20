@@ -27,7 +27,7 @@
 #include <plat/serial.h>
 #include <plat/common.h>
 #include <plat/usb.h>
-#include <plat/display.h>
+#include <video/omapdss.h>
 #include <plat/smartreflex.h>
 #include <plat/voltage.h>
 #include <plat/prcm.h>
