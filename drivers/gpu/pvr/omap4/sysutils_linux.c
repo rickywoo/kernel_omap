@@ -41,8 +41,8 @@
 
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
-//#include <linux/opp.h>
-#include <plat/omap_device.h>
+#include <plat/opp.h>
+//#include <plat/omap_device.h>
 
 #if defined(SUPPORT_DRI_DRM_PLUGIN)
 #include <drm/drmP.h>
@@ -144,8 +144,6 @@ IMG_VOID SysGetSGXTimingInformation(SGX_TIMING_INFORMATION *psTimingInfo)
 	psTimingInfo->ui32ActivePowManLatencyms = sgx_apm_latency;
 }
 
-/* FIXME-HASH Removed */
-#if 0
 void RequestSGXFreq(SYS_DATA *psSysData, IMG_BOOL bMaxFreq)
 {
 	SYS_SPECIFIC_DATA *psSysSpecData = (SYS_SPECIFIC_DATA *) psSysData->pvSysSpecificData;
@@ -178,7 +176,6 @@ void RequestSGXFreq(SYS_DATA *psSysData, IMG_BOOL bMaxFreq)
 	}
 
 }
-#endif
 
 void sgx_idle_log_on(void);
 void sgx_idle_log_off(void);
@@ -197,15 +194,11 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 	PVR_DPF((PVR_DBG_MESSAGE, "EnableSGXClocks: Enabling SGX Clocks"));
 
 #if defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI)
-	omap_device_set_rate(&gpsPVRLDMDev->dev,
-			&gpsPVRLDMDev->dev, SYS_SGX_CLOCK_SPEED);
 	{
 		int res;
 
-		/* FIXME-HASH: Changed to old style
 		if (sgx_idle_mode == 0)
 			RequestSGXFreq(psSysData, IMG_TRUE);
-		*/
 
 		res = pm_runtime_get_sync(&gpsPVRLDMDev->dev);
 		if (res < 0)
@@ -257,13 +250,9 @@ IMG_VOID DisableSGXClocks(SYS_DATA *psSysData)
 			PVR_DPF((PVR_DBG_ERROR, "DisableSGXClocks: pm_runtime_put_sync failed (%d)", -res));
 		}
 
-		/* FIXME-HASH: Set to older method
 		if (sgx_idle_mode == 0)
 			RequestSGXFreq(psSysData, IMG_FALSE);
-		*/
 	}
-	omap_device_set_rate(&gpsPVRLDMDev->dev,
-			&gpsPVRLDMDev->dev, 0);
 #endif
 
 	

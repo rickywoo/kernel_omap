@@ -1337,8 +1337,8 @@ static void __init omap_4430sdp_init(void)
 
 	spi_register_board_info(sdp4430_spi_board_info,	ARRAY_SIZE(sdp4430_spi_board_info));
 
-	omap_vram_set_sdram_vram(TABLET_FB_RAM_SIZE, 0);
-	omapfb_set_platform_data(&tablet_fb_pdata);
+	//**omap_vram_set_sdram_vram(TABLET_FB_RAM_SIZE, 0);
+	//**omapfb_set_platform_data(&tablet_fb_pdata);
 
 	omap_display_init(&sdp4430_dss_data);
 	enable_board_wakeup_source();

@@ -32,6 +32,8 @@
 
 #include <plat/control.h>
 
+#include "sram.h"
+
 #if defined(CONFIG_ARCH_OMAP2) || defined(CONFIG_ARCH_OMAP3)
 # include "../mach-omap2/prm.h"
 # include "../mach-omap2/cm.h"
@@ -453,7 +455,7 @@ static inline int omap44xx_sram_init(void)
 }
 #endif
 
-int omap_sram_init(void)
+int __init omap_sram_init(void)
 {
 	omap_detect_sram();
 	omap_map_sram();
@@ -471,4 +473,3 @@ int omap_sram_init(void)
 
 	return 0;
 }
-EXPORT_SYMBOL(omap_sram_init);

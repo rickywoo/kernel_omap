@@ -289,7 +289,7 @@ static int lm75_remove(struct i2c_client *client)
 
 #ifdef CONFIG_PM
 
-static int lm75_suspend(struct i2c_client *client){
+static int lm75_suspend(struct i2c_client *client, pm_message_t mesg){
 	struct lm75_data *data = i2c_get_clientdata(client);
 	int status;
 	disable_irq(data->irq);

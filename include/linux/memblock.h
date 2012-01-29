@@ -16,7 +16,7 @@
 #include <linux/init.h>
 #include <linux/mm.h>
 
-#include <asm/memblock.h>
+// #include <asm/memblock.h>
 
 #define MAX_MEMBLOCK_REGIONS 128
 

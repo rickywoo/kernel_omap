@@ -846,98 +846,6 @@ static inline void omap_hdq_init(void)
 static inline void omap_hdq_init(void) {}
 #endif
 
-/*---------------------------------------------------------------------------*/
-#ifdef CONFIG_OMAP2_DSS
-
-#define MAX_OMAP_DSS_HWMOD_NAME_LEN 16
-static const char dssname[] = "dss";
-struct omap_device *od;
-
-static struct omap_device_pm_latency omap_dss_latency[] = {
-	[0] = {
-		.deactivate_func	= omap_device_idle_hwmods,
-		.activate_func		= omap_device_enable_hwmods,
-		.flags			= OMAP_DEVICE_LATENCY_AUTO_ADJUST,
-		},
-};
-
-static struct platform_device omap_display_device = {
-	.name		= "omapdss",
-	.id		= -1,
-	.dev		= {
-		.platform_data = NULL,
-	},
-};
-void __init omap_display_init(struct omap_dss_board_info *board_data)
-{
-	struct omap_hwmod *oh;
-	char oh_name_omap4[7][MAX_OMAP_DSS_HWMOD_NAME_LEN] = {"dss",
-			"dss_dispc",
-			"dss_dsi1",
-			"dss_dsi2",
-			"dss_hdmi",
-			"dss_rfbi",
-			"dss_venc"};
-	char oh_name_omap3[5][MAX_OMAP_DSS_HWMOD_NAME_LEN] = {"dss",
-			"dss_dispc",
-			"dss_dsi1",
-			"dss_rfbi",
-			"dss_venc"
-			};
-
-	char (*oh_name)[MAX_OMAP_DSS_HWMOD_NAME_LEN];
-	int l, i, idx = 0, count = 0;
-	struct omap_display_platform_data pdata;
-	idx = 1;
-
-	if (cpu_is_omap44xx()) {
-		oh_name =  &oh_name_omap4[0];
-		count = 7;
-	} else {
-		oh_name =  &oh_name_omap3[0];
-		count = 5;
-	}
-	for (i = 0; i < count; i++)	{
-		l = snprintf(oh_name[i],
-			MAX_OMAP_DSS_HWMOD_NAME_LEN, oh_name[i]);
-		WARN(l >= MAX_OMAP_DSS_HWMOD_NAME_LEN,
-		"String buffer overflow in DSS device setup\n");
-
-		oh = omap_hwmod_lookup(oh_name[i]);
-
-		if (!oh) {
-			pr_err("Could not look up %s\n", oh_name[i]);
-			return;
-		}
-		/* FIXME-HASH: CHECK TO BE SURE WE NEED THIS */
-		strcpy(pdata.name, oh_name[i]);
-		pdata.hwmod_count	= 2;
-		pdata.board_data	= board_data;
-		pdata.board_data->get_last_off_on_transaction_id = NULL;
-		/* FIXME-HASH: added context_loss_count for new dss driver */
-		pdata.board_data->get_context_loss_count = omap_pm_get_dev_context_loss_count; // omap_device_get_context_loss_count;
-
-		pdata.device_enable	= omap_device_enable;
-		pdata.device_idle	= omap_device_idle;
-		pdata.device_shutdown	= omap_device_shutdown;
-		od = omap_device_build(oh_name[i], -1, oh, &pdata,
-			sizeof(struct omap_display_platform_data),
-			omap_dss_latency,
-			ARRAY_SIZE(omap_dss_latency), 0);
-		WARN((IS_ERR(od)), "Could not build omap_device for %s %s\n",
-			dssname, oh_name[i]);
-	}
-	omap_display_device.dev.platform_data = board_data;
-	if (platform_device_register(&omap_display_device) < 0)
-		printk(KERN_ERR "Unable to register OMAP-Display device\n");
-
-	return;
-}
-#else
-void __init omap_display_init(struct omap_dss_board_info *board_data)
-{
-}
-#endif
 
 #if defined(CONFIG_VIDEO_OMAP2_VOUT) || \
 	defined(CONFIG_VIDEO_OMAP2_VOUT_MODULE)
@@ -1051,12 +959,15 @@ static void omap_init_gpu(void)
 
 	/* FIXME-HASH: "pdata->set_min_bus_tput = omap_pm_set_min_bus_tput" [REMOVED LEFT FROM L27.13.1-Beta] */
 	// pdata->set_min_bus_tput = omap_pm_set_min_bus_tput;
-	pdata->set_max_mpu_wakeup_lat = omap_pm_set_max_mpu_wakeup_lat;
+	// pdata->set_max_mpu_wakeup_lat = omap_pm_set_max_mpu_wakeup_lat;
 	/* FIXME-HASH: "pdata->device_scale = omap_device_scale" [ADDED FROM 4AI.4] */
 	pdata->device_scale = omap_device_scale;
 	pdata->device_enable = omap_device_enable;
 	pdata->device_idle = omap_device_idle;
 	pdata->device_shutdown = omap_device_shutdown;
+
+	/* FIXME-HASH: [ADDED FROM 4AI.4] */
+	pdata->ovfreqs = 0;
 
 	od = omap_device_build(name, 0, oh, pdata,
 			     sizeof(struct gpu_platform_data),

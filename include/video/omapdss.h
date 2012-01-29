@@ -364,9 +364,9 @@ struct omap_dss_board_info {
 
 #if defined(CONFIG_OMAP2_DSS_MODULE) || defined(CONFIG_OMAP2_DSS)
 /* Init with the board info */
-extern void __init omap_display_init(struct omap_dss_board_info *board_data);
+extern int __init omap_display_init(struct omap_dss_board_info *board_data);
 #else
-static inline void __init omap_display_init(struct omap_dss_board_info *board_data)
+static inline int __init omap_display_init(struct omap_dss_board_info *board_data)
 {
 	return 0;
 }
