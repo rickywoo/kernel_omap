@@ -1,4 +1,4 @@
-ccflags-y = -DLINUX -D__linux__ -DANDROID -DPVR_BUILD_DIR="\"omap4430_android\""
+ccflags-y = -DLINUX -D__linux__ -DANDROID -DPVR_BUILD_DIR="\"omap4430_android\"" -DSGX_DYNAMIC_TIMING_INFO -DPVR_LDM_DRIVER_REGISTRATION_NAME="\"pvrsrvkm\"" -DSUPPORT_PVRSRV_GET_DC_SYSTEM_BUFFER
 ccflags-y += -Idrivers/gpu/pvr -Idrivers/gpu/pvr/omap4 -Idrivers/video/omap2
 
 ccflags-y += \
