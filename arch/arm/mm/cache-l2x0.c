@@ -52,6 +52,14 @@ static inline void cache_sync(void)
 	cache_wait(base + L2X0_CACHE_SYNC, 1);
 }
 
+/* FIXME-HASH: outer_cache patch */
+static inline void cache_sync_always(void)
+{
+	void __iomem *base = l2x0_base;
+	writel_relaxed(0, base + L2X0_CACHE_SYNC);
+	cache_wait_way(base + L2X0_CACHE_SYNC, 1);
+}
+
 static inline void l2x0_clean_line(unsigned long addr)
 {
 	void __iomem *base = l2x0_base;
@@ -66,7 +74,8 @@ static inline void l2x0_inv_line(unsigned long addr)
 	writel_relaxed(addr, base + L2X0_INV_LINE_PA);
 }
 
-#ifdef CONFIG_PL310_ERRATA_588369
+/* FIXME-HASH: outer_cache patch */
+#if defined(CONFIG_PL310_ERRATA_588369) || defined(CONFIG_PL310_ERRATA_727915)
 static void debug_writel(unsigned long val)
 {
 	extern void omap_smc1(u32 fn, u32 arg);
@@ -77,7 +86,15 @@ static void debug_writel(unsigned long val)
 	 */
 	omap_smc1(0x100, val);
 }
+/* FIXME-HASH: outer_cache patch */
+#else
+/* Optimised out for non-errata case */
+static inline void debug_writel(unsigned long val)
+{
+}
+#endif
 
+#ifdef CONFIG_PL310_ERRATA_588369
 static inline void l2x0_flush_line(unsigned long addr)
 {
 	void __iomem *base = l2x0_base;
@@ -89,11 +106,6 @@ static inline void l2x0_flush_line(unsigned long addr)
 	writel_relaxed(addr, base + L2X0_INV_LINE_PA);
 }
 #else
-
-/* Optimised out for non-errata case */
-static inline void debug_writel(unsigned long val)
-{
-}
 
 static inline void l2x0_flush_line(unsigned long addr)
 {
@@ -120,9 +132,39 @@ static inline void l2x0_inv_all(void)
 	spin_lock_irqsave(&l2x0_lock, flags);
 	writel_relaxed(l2x0_way_mask, l2x0_base + L2X0_INV_WAY);
 	cache_wait_way(l2x0_base + L2X0_INV_WAY, l2x0_way_mask);
-	cache_sync();
+/* FIXME-HASH: outer_cache patch [BEGIN] */
+	cache_sync_always();
 	spin_unlock_irqrestore(&l2x0_lock, flags);
 }
+
+static void l2x0_flush_all(void)
+{
+	unsigned long flags;
+
+	/* clean and invalidate all ways */
+	spin_lock_irqsave(&l2x0_lock, flags);
+	debug_writel(0x03);
+	writel_relaxed(l2x0_way_mask, l2x0_base + L2X0_CLEAN_INV_WAY);
+	cache_wait_way(l2x0_base + L2X0_CLEAN_INV_WAY, l2x0_way_mask);
+	cache_sync_always();
+	debug_writel(0x00);
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+}
+
+static void l2x0_clean_all(void)
+{
+	unsigned long flags;
+
+	/* clean all ways */
+	spin_lock_irqsave(&l2x0_lock, flags);
+	debug_writel(0x03);
+	writel_relaxed(l2x0_way_mask, l2x0_base + L2X0_CLEAN_WAY);
+	cache_wait_way(l2x0_base + L2X0_CLEAN_WAY, l2x0_way_mask);
+	cache_sync_always();
+	debug_writel(0x00);
+	spin_unlock_irqrestore(&l2x0_lock, flags);
+}
+/* FIXME-HASH: outer_cache patch [END] */
 
 static void l2x0_inv_range(unsigned long start, unsigned long end)
 {
@@ -272,6 +314,9 @@ void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 	outer_cache.clean_range = l2x0_clean_range;
 	outer_cache.flush_range = l2x0_flush_range;
 	outer_cache.sync = l2x0_cache_sync;
+	/* FIXME-HASH: outer_cache patch */
+	outer_cache.flush_all = l2x0_flush_all;
+	outer_cache.clean_all = l2x0_clean_all;
 
 	printk(KERN_INFO "%s cache controller enabled\n", type);
 	printk(KERN_INFO "l2x0: %d ways, CACHE_ID 0x%08x, AUX_CTRL 0x%08x\n",
