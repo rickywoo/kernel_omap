@@ -1,10 +1,9 @@
-ccflags-y = -DLINUX -D__linux__ -DANDROID -DPVR_BUILD_DIR="\"omap4430_android\"" -DSGX_DYNAMIC_TIMING_INFO -DPVR_LDM_DRIVER_REGISTRATION_NAME="\"pvrsrvkm\"" -DSUPPORT_PVRSRV_GET_DC_SYSTEM_BUFFER
+ccflags-y = -DLINUX -D__linux__ -DANDROID -DPVR_BUILD_DIR="\"omap4430_android\""
 ccflags-y += -Idrivers/gpu/pvr -Idrivers/gpu/pvr/omap4 -Idrivers/video/omap2
 
 ccflags-y += \
 	-DSUPPORT_SGX \
 	-DTRANSFER_QUEUE \
-	-DSGX_DYNAMIC_TIMING_INFO \
 	-DSUPPORT_HW_RECOVERY \
 	-DLDM_PLATFORM \
 	-DSUPPORT_SGX_NEW_STATUS_VALS \
@@ -25,6 +24,12 @@ ccflags-y += \
 	-DSYS_SUPPORTS_SGX_IDLE_CALLBACK \
 	-DPVRSRV_REFCOUNT_DEBUG \
 	-Idrivers/gpu/pvr/sgx
+
+# Removed:
+# -DSGX_DYNAMIC_TIMING_INFO \
+
+# Never Had:
+# -DSUPPORT_PVRSRV_GET_DC_SYSTEM_BUFFER \
 
 ccflags-$(CONFIG_PVR_SGXCORE_540) += \
 	-DSGX540 -DSUPPORT_SGX540 \
