@@ -1955,7 +1955,7 @@ static void __init omap_4430sdp_init(void)
 	//omap_disp_led_init();
 	omap_dmm_init();
 #ifdef CONFIG_ION_OMAP
-	//omap4_register_ion();
+	omap4_register_ion();
 #endif
 	platform_add_devices(sdp4430_devices, ARRAY_SIZE(sdp4430_devices));
 
@@ -2047,7 +2047,7 @@ static void __init omap_4430sdp_map_io(void)
 	omap2_set_globals_443x();
 	omap44xx_map_common_io();
 #ifdef CONFIG_ION_OMAP
-	//omap_ion_init();
+	omap_ion_init();
 #endif
 }
 
