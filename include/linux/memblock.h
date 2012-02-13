@@ -82,7 +82,7 @@ memblock_end_pfn(struct memblock_region *type, unsigned long region_nr)
 	       memblock_size_pages(type, region_nr);
 }
 
-#include <asm/memblock.h>
+// #include <asm/memblock.h>
 
 #endif /* __KERNEL__ */
 

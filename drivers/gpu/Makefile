@@ -1,3 +1,3 @@
-# add later below stub/ ion/
-obj-y			+= drm/ vga/
+# add later below stub/ 
+obj-y			+= drm/ vga/ ion/
 obj-y			+= pvr/

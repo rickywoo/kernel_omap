@@ -67,6 +67,9 @@
 #include <linux/skbuff.h>
 #include <linux/ti_wilink_st.h>
 
+#include <mach/dmm.h>
+#include "omap4_ion.h"
+
 #define OMAP4_LCD_EN_GPIO		28
 
 #define OMAP4_TOUCH_RESET_GPIO			18
@@ -1950,6 +1953,10 @@ static void __init omap_4430sdp_init(void)
 	omap4_i2c_init();
 	omap4_display_init();
 	//omap_disp_led_init();
+	omap_dmm_init();
+#ifdef CONFIG_ION_OMAP
+	//omap4_register_ion();
+#endif
 	platform_add_devices(sdp4430_devices, ARRAY_SIZE(sdp4430_devices));
 
 	gpio_request(0,"sysok");
@@ -1959,22 +1966,22 @@ static void __init omap_4430sdp_init(void)
 	omap4_twl6030_hsmmc_init(mmc);
 gpio_request(42,"OMAP_GPIO_ADC");
 gpio_direction_output(42,0);
-    /*For smb347*/
-    //Enable charger interrupt wakeup function.
-    omap_mux_init_signal("fref_clk4_req.gpio_wk7", \
+	/*For smb347*/
+	//Enable charger interrupt wakeup function.
+	omap_mux_init_signal("fref_clk4_req.gpio_wk7", \
             OMAP_PIN_INPUT_PULLUP |OMAP_PIN_OFF_WAKEUPENABLE|OMAP_PIN_OFF_INPUT_PULLUP);
-    if(quanta_mbid>=4){
-        //EN pin
-        omap_mux_init_signal("c2c_data12.gpio_101", \
-                OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_LOW);
-        //SUSP
-        omap_mux_init_signal("uart4_rx.gpio_155", \
-                OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_HIGH);
-        gpio_request(101, "CHARGE-en");
-        gpio_direction_output(101, 0);
-        gpio_request(155, "CHARGE-SUSP");
-        gpio_direction_output(155, 1);
-    }
+	if(quanta_mbid>=4){
+        	//EN pin
+        	omap_mux_init_signal("c2c_data12.gpio_101", \
+			OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_LOW);
+		//SUSP
+		omap_mux_init_signal("uart4_rx.gpio_155", \
+			OMAP_PIN_OUTPUT |OMAP_PIN_OFF_OUTPUT_HIGH);
+		gpio_request(101, "CHARGE-en");
+		gpio_direction_output(101, 0);
+		gpio_request(155, "CHARGE-SUSP");
+		gpio_direction_output(155, 1);
+	}
 #ifdef CONFIG_TIWLAN_SDIO
 	config_wlan_mux();
 #else
@@ -2017,12 +2024,13 @@ gpio_direction_output(42,0);
 	omap_ilitek_init();	// chris 2011_0124
 #endif //CONFIG_TOUCHSCREEN_ILITEK
 
-    gpio_request(119, "ADO_SPK_ENABLE");
-    gpio_direction_output(119, 1);
-    gpio_set_value(119, 1);
-    gpio_request(120, "SKIPB_GPIO");
-    gpio_direction_output(120, 1);
-    gpio_set_value(120, 1);
+	gpio_request(119, "ADO_SPK_ENABLE");
+	gpio_direction_output(119, 1);
+	gpio_set_value(119, 1);
+	gpio_request(120, "SKIPB_GPIO");
+	gpio_direction_output(120, 1);
+	gpio_set_value(120, 1);
+
  // Qunata_diagnostic 20110506 set GPIO 171 172 to be input
 
 	omap_writew(omap_readw(0x4a10017C) | 0x011B, 0x4a10017C); 
@@ -2038,6 +2046,9 @@ static void __init omap_4430sdp_map_io(void)
 	ramconsole_reserve_sdram();
 	omap2_set_globals_443x();
 	omap44xx_map_common_io();
+#ifdef CONFIG_ION_OMAP
+	//omap_ion_init();
+#endif
 }
 
 MACHINE_START(OMAP_4430SDP, "OMAP4430")

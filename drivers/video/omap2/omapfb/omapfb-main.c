@@ -45,8 +45,8 @@
 #define OMAPFB_PLANE_XRES_MIN		8
 #define OMAPFB_PLANE_YRES_MIN		8
 
-#ifdef CONFIG_SGX540
-#define SGX_HW_ALIGN_PIXELS		8
+#ifdef CONFIG_PVR_SGX
+#define SGX_HW_ALIGN_PIXELS		32
 #endif
 
 static char *def_mode;
@@ -662,7 +662,7 @@ void set_fb_fix(struct fb_info *fbi)
 		fix->smem_len = var->yres_virtual * fix->line_length;
 	} else if (ofbi->rotation_type != OMAP_DSS_ROT_TILER) {
 		int aligned_width = var->xres_virtual;
-#ifdef CONFIG_SGX540
+#ifdef CONFIG_PVR_SGX
 		aligned_width = ALIGN(aligned_width, SGX_HW_ALIGN_PIXELS);
 #endif
 		fix->line_length =

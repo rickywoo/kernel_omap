@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.7
-# Sun Feb 12 00:58:24 2012
+# Sun Feb 12 02:15:10 2012
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -1434,6 +1434,8 @@ CONFIG_SGX_DVFS_MODE_NONE=y
 # CONFIG_SGX_DVFS_MODE_LINEAR is not set
 # CONFIG_SGX_DVFS_MODE_OPTIMIZED is not set
 CONFIG_SGX_DVFS_IDLE_TIMEOUT=1000
+CONFIG_ION=y
+CONFIG_ION_OMAP=y
 # CONFIG_VGASTATE is not set
 # CONFIG_VIDEO_OUTPUT_CONTROL is not set
 CONFIG_FB=y
